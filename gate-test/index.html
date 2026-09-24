@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>FAMOUS PEOPLE · 참가자 테스트</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#e8edee;font-family:system-ui,'Noto Sans KR',sans-serif}
+#frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
+#lock{position:fixed;inset:0;z-index:20;display:none;background:transparent;pointer-events:auto;touch-action:none}
+#lock.on{display:block}
+#lockCard{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(calc(100% - 28px),520px);padding:11px 14px;border-radius:16px;background:rgba(48,78,98,.96);color:#fff;text-align:center;font-size:14px;font-weight:800;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#closed{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:#eef2f2;padding:24px}.closed-card{width:min(100%,420px);background:#fff;border:3px solid #35556a;border-radius:22px;padding:28px;text-align:center;color:#35556a}.closed-card h1{font-size:24px;margin:0 0 8px}.closed-card p{line-height:1.5;color:#657982}
+#join{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:#eef2f2;padding:22px}.join-card{width:min(100%,420px);background:#fff;border:3px solid #35556a;border-radius:24px;padding:24px;color:#35556a}.join-card h1{font-size:26px;margin:0 0 8px}.join-card p{color:#6c7d83;line-height:1.5}.join-card input{width:100%;height:58px;border:2px solid #b7c6cb;border-radius:14px;font-size:26px;font-weight:900;text-align:center;letter-spacing:.12em;margin:12px 0}.join-card button{width:100%;height:52px;border:0;border-radius:14px;background:#35556a;color:white;font-size:17px;font-weight:900}.err{min-height:22px;color:#b55443;font-size:14px;text-align:center;margin-bottom:6px}
+#branch{position:fixed;right:8px;top:8px;z-index:10;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.78);color:#65757c;font-size:10px;font-weight:800;pointer-events:none}
+</style>
+</head>
+<body>
+<iframe id="frame" title="FAMOUS PEOPLE 참가자 활동"></iframe>
+<div id="branch">TEST BRANCH</div>
+<div id="lock"><div id="lockCard">지금은 서로 이야기하는 시간입니다.<br>진행자가 다음 단계를 열면 자동으로 이동합니다.</div></div>
+<div id="closed"><div class="closed-card"><h1>활동이 종료되었습니다.</h1><p>진행자가 활동을 마쳤습니다.</p></div></div>
+<div id="join"><div class="join-card"><h1>활동 코드</h1><p>진행자가 알려준 6자리 코드를 입력해 주세요.</p><input id="code" inputmode="numeric" maxlength="6" placeholder="000000"><div class="err" id="err"></div><button id="go">활동에 들어가기</button></div></div>
+<script>
+const DB='https://emotion-share-test-default-rtdb.asia-southeast1.firebasedatabase.app';
+const q=new URLSearchParams(location.search);let room=(q.get('s')||q.get('room')||'').replace(/\D/g,'').slice(0,6);
+const frame=document.getElementById('frame'),lock=document.getElementById('lock'),closed=document.getElementById('closed'),join=document.getElementById('join');
+let phase='',lastPhase='',screen='';
+function participantSrc(){return new URL('../index.html?s='+encodeURIComponent(room),location.href).href}
+function openApp(){join.style.display='none';frame.src=participantSrc()}
+async function getMeta(){if(!room)return null;const r=await fetch(`${DB}/sessions/${room}/meta.json?ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error('meta');return r.json()}
+function detectScreen(){try{const d=frame.contentDocument;if(!d)return '';const top=(d.querySelector('.topbar .center')?.textContent||'').trim();const txt=(d.body?.innerText||'').slice(0,2500);if(top.includes('첫 번째 만남')||txt.includes('같은 장면을 고른 사람을 만나봅니다'))return 'meeting1';if(top.includes('두 번째 만남')||txt.includes('이번에는 서로 다른 장면의 이야기를 들어봅니다'))return 'meeting2';return top}catch(e){return ''}}
+function applyLock(){screen=detectScreen();const locked=(screen==='meeting1'&&phase!=='deep'&&phase!=='dialogue2'&&phase!=='life')||(screen==='meeting2'&&phase!=='life');lock.classList.toggle('on',locked);document.getElementById('lockCard').innerHTML=screen==='meeting2'?'지금은 두 번째로 서로 이야기하는 시간입니다.<br>진행자가 마치면 역할 밖의 나로 자동 이동합니다.':'지금은 서로 이야기하는 시간입니다.<br>진행자가 다음 단계를 열면 자동으로 이동합니다.'}
+async function tick(){if(!room)return;try{const m=await getMeta();if(!m){join.style.display='grid';document.getElementById('err').textContent='활동 코드를 다시 확인해 주세요.';return}if(m.status==='closed'){closed.style.display='grid';lock.classList.remove('on');return}else closed.style.display='none';phase=m.phase||'collecting';if(lastPhase&&phase!==lastPhase){const shouldReload=(phase==='deep'&&screen==='meeting1')||(phase==='life'&&screen==='meeting2')||(phase==='dialogue1'&&screen==='meeting1')||(phase==='dialogue2'&&screen==='meeting2');if(shouldReload)frame.src=participantSrc()}lastPhase=phase;applyLock()}catch(e){}}
+frame.addEventListener('load',()=>{setTimeout(applyLock,250);setTimeout(applyLock,900)});
+setInterval(()=>{applyLock();tick()},850);
+if(room){openApp();tick()}else{join.style.display='grid'}
+document.getElementById('code').addEventListener('input',e=>e.target.value=e.target.value.replace(/\D/g,'').slice(0,6));
+document.getElementById('go').onclick=async()=>{const c=document.getElementById('code').value.trim();if(!/^\d{6}$/.test(c)){document.getElementById('err').textContent='6자리 숫자를 입력해 주세요.';return}room=c;const m=await getMeta().catch(()=>null);if(!m){document.getElementById('err').textContent='활동 코드를 다시 확인해 주세요.';return}history.replaceState(null,'',`${location.pathname}?s=${room}`);openApp();tick()};
+</script>
+</body></html>
