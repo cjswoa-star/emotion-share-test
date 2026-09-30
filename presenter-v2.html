@@ -14,7 +14,7 @@ const target=new URL('presenter.html',location.href);target.search=location.sear
 function inject(){
   try{
     const d=host.contentDocument;if(!d||!d.head||d.getElementById('fpFeedbackAdminPatch'))return;
-    const s=d.createElement('script');s.id='fpFeedbackAdminPatch';s.src=new URL('demo/feedback-admin-patch.js?v=feedback1',location.href).href;
+    const s=d.createElement('script');s.id='fpFeedbackAdminPatch';s.src=new URL('demo/feedback-admin-patch.js?v=feedback2',location.href).href;
     s.onload=()=>{
       const glue=d.createElement('script');
       glue.textContent=`
@@ -23,6 +23,7 @@ function inject(){
         setTimeout(()=>{try{if(state&&state.data)renderDashboard()}catch(e){console.warn(e)}},80);
       `;
       d.body.appendChild(glue);
+      const r=d.createElement('script');r.id='fpLateJoinPatch';r.src=new URL('demo/feedback-admin-stage2.js?v=feedback2',location.href).href;d.head.appendChild(r);
     };
     d.head.appendChild(s);
   }catch(e){console.warn('presenter patch inject',e)}
