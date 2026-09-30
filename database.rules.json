@@ -1,0 +1,31 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sessions": {
+      "$sessionId": {
+        ".read": "auth != null && (data.child('meta').child('ownerUid').val() === auth.uid || data.child('members').child(auth.uid).val() === true)",
+        "meta": {
+          ".read": "auth != null",
+          ".write": "auth != null && ((!data.exists() && newData.child('ownerUid').val() === auth.uid) || (data.exists() && data.child('ownerUid').val() === auth.uid && newData.child('ownerUid').val() === auth.uid))",
+          ".validate": "newData.hasChildren(['ownerUid','createdAt','status','phase']) && newData.child('ownerUid').isString() && newData.child('ownerUid').val().length > 10 && newData.child('status').isString() && (newData.child('status').val() === 'active' || newData.child('status').val() === 'closed') && newData.child('phase').isString()"
+        },
+        "members": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($sessionId).child('meta').child('status').val() === 'active'",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "participants": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($sessionId).child('meta').child('status').val() === 'active'",
+            ".validate": "newData.hasChildren(['nickname']) && newData.child('nickname').isString() && newData.child('nickname').val().length > 0 && newData.child('nickname').val().length <= 20"
+          }
+        },
+        "groups": {
+          ".write": "auth != null && root.child('sessions').child($sessionId).child('meta').child('ownerUid').val() === auth.uid"
+        }
+      }
+    }
+  }
+}
