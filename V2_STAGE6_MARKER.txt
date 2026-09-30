@@ -1,0 +1,2 @@
+V2 stage 6 checkpoint
+New reflective transition inserted after nickname.
