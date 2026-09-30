@@ -30,11 +30,11 @@ async function wire(){
         d.__FP_V2_WIRING=true;
         const start=d.getElementById('start');
         if(start){start.disabled=true;start.dataset.oldText=start.textContent;start.textContent='화면 준비 중...'}
-        await ensureScript(d,'fpFeedbackParticipantPatch',new URL('demo/feedback-participant-patch.js?v=feedback5',location.href).href);
-        await ensureScript(d,'fpParticipantStage2',new URL('demo/feedback-participant-stage2.js?v=feedback5',location.href).href);
+        await ensureScript(d,'fpFeedbackParticipantPatch',new URL('demo/feedback-participant-patch.js?v=feedback6',location.href).href);
+        await ensureScript(d,'fpParticipantStage3',new URL('demo/feedback-participant-stage3.js?v=feedback6',location.href).href);
         await Promise.all([
-          ensureScript(d,'fpMobileHardeningPatch',new URL('demo/feedback-mobile-patch.js?v=feedback5',location.href).href),
-          ensureScript(d,'fpChoiceClarityPatch',new URL('demo/feedback-visual-patch.js?v=feedback5',location.href).href)
+          ensureScript(d,'fpMobileHardeningPatch',new URL('demo/feedback-mobile-patch.js?v=feedback6',location.href).href),
+          ensureScript(d,'fpChoiceClarityPatch',new URL('demo/feedback-visual-patch.js?v=feedback6',location.href).href)
         ]);
         const b=d.getElementById('start');
         if(b&&typeof appFrame.contentWindow.renderEntry==='function'){
