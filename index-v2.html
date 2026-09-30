@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>FAMOUS PEOPLE SEL · 참가자 V2</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eef2f2}#host{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}</style>
+</head>
+<body>
+<iframe id="host" title="FAMOUS PEOPLE SEL 참가자 V2"></iframe>
+<script>
+const host=document.getElementById('host');
+const target=new URL('demo/index.html',location.href);target.search=location.search;host.src=target.href;
+let timer=null;
+function wire(){
+  try{
+    const outerDoc=host.contentDocument;if(!outerDoc)return;
+    const appFrame=outerDoc.getElementById('frame');if(!appFrame)return;
+    const inject=()=>{
+      try{
+        const d=appFrame.contentDocument;if(!d||!d.head)return;
+        if(d.getElementById('fpFeedbackParticipantPatch'))return;
+        const s=d.createElement('script');s.id='fpFeedbackParticipantPatch';s.src=new URL('demo/feedback-participant-patch.js?v=feedback1',location.href).href;
+        s.onload=()=>{try{const b=d.getElementById('start');if(b&&typeof appFrame.contentWindow.renderEntry==='function')b.onclick=appFrame.contentWindow.renderEntry}catch(e){console.warn(e)}};
+        d.head.appendChild(s);
+      }catch(e){console.warn('participant patch inject',e)}
+    };
+    appFrame.addEventListener('load',inject);inject();
+  }catch(e){console.warn('participant wrapper wire',e)}
+}
+host.addEventListener('load',()=>{wire();clearInterval(timer);timer=setInterval(wire,700)});
+</script>
+</body>
+</html>
