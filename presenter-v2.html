@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>FAMOUS PEOPLE SEL · 진행자 V2</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eef2f2}#host{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}</style>
+</head>
+<body>
+<iframe id="host" title="FAMOUS PEOPLE SEL 진행자 V2"></iframe>
+<script>
+const host=document.getElementById('host');
+const target=new URL('presenter.html',location.href);target.search=location.search;host.src=target.href;
+function inject(){
+  try{
+    const d=host.contentDocument;if(!d||!d.head||d.getElementById('fpFeedbackAdminPatch'))return;
+    const s=d.createElement('script');s.id='fpFeedbackAdminPatch';s.src=new URL('demo/feedback-admin-patch.js?v=feedback1',location.href).href;
+    s.onload=()=>{
+      const glue=d.createElement('script');
+      glue.textContent=`
+        pUrl=function(code=state.sessionId){const u=new URL('index-v2.html',location.href);u.search='';u.hash='';u.searchParams.set('s',code);return u.href};
+        qr=function(el,url,size){if(!el)return;const src='https://quickchart.io/qr?size='+encodeURIComponent(size)+'&text='+encodeURIComponent(url);el.innerHTML='<img src="'+src+'" alt="참가자 접속 QR" width="'+size+'" height="'+size+'">'};
+        setTimeout(()=>{try{if(state&&state.data)renderDashboard()}catch(e){console.warn(e)}},80);
+      `;
+      d.body.appendChild(glue);
+    };
+    d.head.appendChild(s);
+  }catch(e){console.warn('presenter patch inject',e)}
+}
+host.addEventListener('load',()=>{inject();setTimeout(inject,300);setTimeout(inject,1000)});
+</script>
+</body>
+</html>
