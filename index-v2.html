@@ -20,12 +20,15 @@ function wire(){
       try{
         const d=appFrame.contentDocument;if(!d||!d.head)return;
         if(!d.getElementById('fpFeedbackParticipantPatch')){
-          const s=d.createElement('script');s.id='fpFeedbackParticipantPatch';s.src=new URL('demo/feedback-participant-patch.js?v=feedback2',location.href).href;
+          const s=d.createElement('script');s.id='fpFeedbackParticipantPatch';s.src=new URL('demo/feedback-participant-patch.js?v=feedback3',location.href).href;
           s.onload=()=>{try{const b=d.getElementById('start');if(b&&typeof appFrame.contentWindow.renderEntry==='function')b.onclick=appFrame.contentWindow.renderEntry}catch(e){console.warn(e)}};
           d.head.appendChild(s);
         }
         if(!d.getElementById('fpMobileHardeningPatch')){
-          const m=d.createElement('script');m.id='fpMobileHardeningPatch';m.src=new URL('demo/feedback-mobile-patch.js?v=feedback2',location.href).href;d.head.appendChild(m);
+          const m=d.createElement('script');m.id='fpMobileHardeningPatch';m.src=new URL('demo/feedback-mobile-patch.js?v=feedback3',location.href).href;d.head.appendChild(m);
+        }
+        if(!d.getElementById('fpChoiceClarityPatch')){
+          const v=d.createElement('script');v.id='fpChoiceClarityPatch';v.src=new URL('demo/feedback-visual-patch.js?v=feedback3',location.href).href;d.head.appendChild(v);
         }
       }catch(e){console.warn('participant patch inject',e)}
     };
