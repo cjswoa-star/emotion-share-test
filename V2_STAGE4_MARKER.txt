@@ -1,3 +1,0 @@
-V2 stage 4 checkpoint
-Transition loader race fixed.
-Use commit after this marker for presenter-v2.html and index-v2.html.
