@@ -1,0 +1,56 @@
+name: Firebase live connection smoke test
+on:
+  push:
+    paths:
+      - '.github/workflows/firebase-smoke-check.yml'
+permissions:
+  contents: write
+jobs:
+  firebase-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check deployed app, Firebase sign-in and permissions
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: \${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,json,datetime,base64,os
+          api='AIzaSyB6mWBT6IYc9BkGBPvPhIb0HBDA0Vj3Bxo'
+          db='https://emotion-share-test-default-rtdb.asia-southeast1.firebasedatabase.app'
+          result={'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'note':'Read-only checks; no existing class data is changed','checks':{}}
+          def req(url,data=None,headers=None,method=None):
+            try:
+              r=urllib.request.Request(url,data=(json.dumps(data).encode() if data is not None else None),headers=headers or {'Content-Type':'application/json'},method=method)
+              with urllib.request.urlopen(r,timeout=20) as f:return f.status,f.read(20000).decode('utf-8','replace')
+            except urllib.error.HTTPError as e:return e.code,e.read(20000).decode('utf-8','replace')
+            except Exception as e:return 'ERROR',type(e).__name__+': '+str(e)[:120]
+          for key,url in [('github_main','https://cjswoa-star.github.io/emotion-share-test/'),('github_v10','https://cjswoa-star.github.io/emotion-share-test/v10/index.html')]:
+            status,body=req(url)
+            result['checks'][key]={'http_status':status,'ok':status==200}
+          status,body=req('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+api,{'returnSecureToken':True})
+          token=None
+          if status==200:
+            try:token=json.loads(body).get('idToken')
+            except:pass
+          code=None
+          try:code=json.loads(body).get('error',{}).get('message')
+          except:pass
+          result['checks']['firebase_anonymous_auth']={'http_status':status,'ok':bool(token),'error_code':code}
+          path='/sessions/ZZZZQA9X9X/meta.json'
+          status,body=req(db+path)
+          result['checks']['unauthenticated_session_meta']={'http_status':status,'public_read_allowed':status==200}
+          if token:
+            from urllib.parse import quote
+            status,body=req(db+path+'?auth='+quote(token))
+            result['checks']['anonymous_session_meta']={'http_status':status,'allowed':status==200,'not_found':body.strip()=='null'}
+            status,body=req(db+'/sessions/ZZZZQA9X9X/participants/OTHER_TEST_USER.json?auth='+quote(token))
+            result['checks']['anonymous_other_user_private']={'http_status':status,'access_denied':status in (401,403),'body_null':body.strip()=='null'}
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          url='https://api.github.com/repos/'+os.environ['GH_REPO']+'/contents/.firebase-diagnostics/last-check.json'
+          payload={'message':'Record Firebase connection smoke test','content':base64.b64encode((json.dumps(result,ensure_ascii=False,indent=2)+'\n').encode()).decode(),'branch':'main'}
+          x,y=req(url,payload,{'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'},'PUT')
+          print('Result upload HTTP status:',x)
+          if x not in (200,201):print('Report failed:',y[:300])
+          PY
