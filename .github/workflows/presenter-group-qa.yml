@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/presenter-group-qa.yml'
+      - 'qa/group-assignment-live.cjs'
   workflow_dispatch:
 permissions:
   contents: read
