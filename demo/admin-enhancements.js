@@ -38,6 +38,8 @@
     steps.push(has(d.nextAction) && (d.nextAction!=='내가 직접 적어보기'||has(d.nextActionText)));
     steps.push(finished(r));
     var n=steps.filter(Boolean).length;
+    // An explicit final submission completes the workflow, even when the student chose not to name an emotion.
+    if(finished(r))n=steps.length;
     return {count:n,total:steps.length,percent:Math.round(n/steps.length*100),done:finished(r)};
   }
   function peopleProgress(data){
