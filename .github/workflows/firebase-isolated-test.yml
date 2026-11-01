@@ -1,0 +1,9 @@
+name: Firebase isolated test
+on:
+  push:
+    paths: ['.github/workflows/firebase-isolated-test.yml']
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'QA environment ready'
