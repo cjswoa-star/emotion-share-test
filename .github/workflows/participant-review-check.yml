@@ -1,0 +1,11 @@
+name: Participant review browser check
+on:
+  push:
+    paths: ['.github/workflows/participant-review-check.yml']
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save playwright@1.56.1
+      - run: mkdir -p screenshots && node qa/check-participant-history.cjs
