@@ -48,7 +48,7 @@
       var sc=score(r),cls=sc.done?'complete':'pending',txt=sc.done?'완료':'미완료';
       return '<div class="sel-student '+cls+'"><div class="sel-student-top"><b>'+esc(r.nickname)+'</b><span>'+sc.percent+'% · '+sc.count+'/'+sc.total+'항목</span><strong>'+txt+'</strong></div><div class="sel-track" role="progressbar" aria-label="'+esc(r.nickname)+' 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+sc.percent+'"><i style="width:'+sc.percent+'%"></i></div></div>';
     }).join('');
-    return '<div class="sel-progress-head"><h2>참가자별 활동 완료율</h2><div class="sel-completion-totals"><b>전체 '+rr.length+'명</b><b>완료 '+done.length+'명</b><b>미완료 '+unfinished.length+'명</b></div></div><p class="sel-muted">6개 장면 확인 + 장면 선택 + 깊이 보기 5항목 + 실제 나 2항목 + 마지막 성찰 = 총 15항목. 장면을 ‘경험하지 않음’으로 넘겨도 확인을 마친 것으로 계산합니다.</p><div class="sel-student-grid">'+(cards||'<p>참가자가 아직 없습니다.</p>')+'</div>';
+    return '<div class="sel-progress-head"><h2>참가자별 활동 완료율</h2><div class="sel-completion-totals"><b>전체 '+rr.length+'명</b><b>완료 '+done.length+'명</b><b>미완료 '+unfinished.length+'명</b></div></div><p class="sel-muted">7개 장면 확인 + 장면 선택 + 깊이 보기 5항목 + 실제 나 2항목 + 마지막 성찰 = 총 16항목. 장면을 ‘경험하지 않음’으로 넘겨도 확인을 마친 것으로 계산합니다.</p><div class="sel-student-grid">'+(cards||'<p>참가자가 아직 없습니다.</p>')+'</div>';
   }
   var fieldNames={
     emotion:'감정 이름',intensity:'감정의 세기',body:'몸의 반응',
@@ -108,7 +108,7 @@
   function moodHTML(){
     var pp=points(),quads=[0,0,0,0],unique=new Set();
     pp.forEach(function(p){quads[(p.y>=.5?2:0)+(p.x>=.5?1:0)]++;unique.add(p.name);});
-    var opts='<option value="all">전체 6개 장면</option>'+SCENES.map(function(s){return '<option value="'+s.id+'">'+s.n+' · '+esc(s.title)+'</option>';}).join('');
+    var opts='<option value="all">전체 7개 장면</option>'+SCENES.map(function(s){return '<option value="'+s.id+'">'+s.n+' · '+esc(s.title)+'</option>';}).join('');
     var dots=pp.map(function(p){
       var label=moodShowNames?esc(p.name):'●',title=moodShowNames?p.name+' · '+p.scene+'번 장면':'익명 · '+p.scene+'번 장면';
       return '<span class="sel-mood-dot '+(moodShowNames?'named':'')+'" style="left:'+(p.x*100)+'%;top:'+(p.y*100)+'%" title="'+esc(title)+'" aria-label="'+esc(title)+'">'+label+'</span>';
