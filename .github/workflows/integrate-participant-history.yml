@@ -1,0 +1,10 @@
+name: Participant review setup
+on:
+  push:
+    paths: ['.github/workflows/integrate-participant-history.yml']
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node qa/apply-review.cjs
