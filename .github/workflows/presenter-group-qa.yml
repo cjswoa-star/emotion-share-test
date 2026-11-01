@@ -1,0 +1,27 @@
+name: Presenter group editing browser verification
+on:
+  push:
+    paths:
+      - '.github/workflows/presenter-group-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  group-editor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser harness
+        run: npm install --no-save playwright@1.56.1
+      - name: Run real Firebase group assignment test
+        run: |
+          mkdir -p screenshots
+          node qa/group-assignment-live.cjs
+      - name: Save presenter screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: presenter-group-qa-screenshots
+          path: screenshots
+          if-no-files-found: ignore
