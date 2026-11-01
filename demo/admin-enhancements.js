@@ -33,7 +33,7 @@
     steps.push(has(d.intensity));
     steps.push(has(d.bodySignals));
     steps.push(has(d.urge));
-    steps.push(has(d.reason) && (d.reason!=='내 말로 적어볼게요'||has(d.reasonText)));
+    steps.push(has(d.reason) && (d.reason!=='내가 직접 적어볼게요'||has(d.reasonText)));
     steps.push(has(d.lifeLink));
     steps.push(has(d.nextAction) && (d.nextAction!=='내가 직접 적어보기'||has(d.nextActionText)));
     steps.push(finished(r));
@@ -66,7 +66,7 @@
     if(key==='next')v=d.nextAction;
     if(!has(v))return [];
     var detail='';
-    if(key==='reason'&&d.reason==='내 말로 적어볼게요')detail=d.reasonText||'';
+    if(key==='reason'&&d.reason==='내가 직접 적어볼게요')detail=d.reasonText||'';
     if(key==='next'&&d.nextAction==='내가 직접 적어보기')detail=d.nextActionText||'';
     if(key==='urge'&&d.urge==='내가 직접 적어보기')detail=d.urgeText||'';
     var a=Array.isArray(v)?v:[v];
