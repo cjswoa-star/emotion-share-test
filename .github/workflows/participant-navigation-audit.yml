@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/participant-navigation-audit.yml'
+      - 'qa/navigation-audit.cjs'
 jobs:
   audit:
     runs-on: ubuntu-latest
