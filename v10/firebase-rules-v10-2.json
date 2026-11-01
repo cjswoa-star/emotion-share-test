@@ -1,0 +1,59 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sessions": {
+      "$code": {
+        ".read": "auth != null && data.child('meta').child('ownerUid').val() === auth.uid",
+        ".write": "auth != null && data.child('meta').child('ownerUid').val() === auth.uid && !newData.exists()",
+        "meta": {
+          ".read": "auth != null",
+          ".write": "auth != null && ((!data.exists() && newData.child('ownerUid').val() === auth.uid) || (data.exists() && data.child('ownerUid').val() === auth.uid && newData.child('ownerUid').val() === auth.uid))",
+          ".validate": "newData.hasChildren(['ownerUid','createdAt','status','phase']) && newData.child('ownerUid').isString() && newData.child('status').isString() && (newData.child('status').val() === 'active' || newData.child('status').val() === 'closed') && newData.child('phase').isString()"
+        },
+        "groups": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('sessions').child($code).child('meta').child('ownerUid').val() === auth.uid"
+        },
+        "publicParticipants": {
+          ".read": "auth != null",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($code).child('meta').child('status').val() === 'active'",
+            "nickname": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 12"
+            },
+            "focusScene": {
+              ".validate": "newData.isString() && newData.val().matches(/^scene0[1-7]$/)"
+            }
+          }
+        },
+        "participants": {
+          "$uid": {
+            ".read": "auth != null && (auth.uid === $uid || auth != null && root.child('sessions').child($code).child('meta').child('ownerUid').val() === auth.uid)",
+            ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($code).child('meta').child('status').val() === 'active'",
+            "nickname": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 20"
+            },
+            "finalReflection": {
+              "text": {
+                ".validate": "newData.isString() && newData.val().length <= 1000"
+              }
+            }
+          }
+        },
+        "reflections": {
+          ".read": "auth != null && root.child('sessions').child($code).child('meta').child('ownerUid').val() === auth.uid",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($code).child('meta').child('status').val() === 'active'",
+            "text": {
+              ".validate": "newData.isString() && newData.val().length <= 1000"
+            },
+            "nickname": {
+              ".validate": "newData.isString() && newData.val().length <= 12"
+            }
+          }
+        }
+      }
+    }
+  }
+}
