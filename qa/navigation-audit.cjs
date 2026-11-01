@@ -13,3 +13,5 @@ for(const t of toks){
 const navs=[...s.matchAll(/document\.querySelector\('\[data-back\]'\)\.onclick\s*=\s*([^;]+);/g)].map(x=>x[1].slice(0,200));
 console.log('BACK_HANDLERS',JSON.stringify(navs.slice(0,45)));
 console.log('SCRIPTS',JSON.stringify([...s.matchAll(/<script[^>]*src=["']([^"' ]+)/g)].map(m=>m[1])));
+
+for(const x of ['const SCENES=','const state=','function renderScene','function renderComplete','function renderWaiting']){const p=s.indexOf(x);console.log('AUDIT_DETAIL '+x+' '+(p<0?'not found':s.slice(p,p+3500).replaceAll('\n',' ').slice(0,2900)));}
