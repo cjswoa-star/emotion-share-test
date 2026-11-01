@@ -27,7 +27,8 @@ async function waitFor(f){for(let i=0;i<28;i++){if(await f())return true;await s
  log('random_singleton_merge',await admin.locator('.gm-card').count()===1);
  await admin.locator('#gmSave').click();
  let g=await get('groups/dialogue1',owner);
- log('random_group_saved',g.status===200&&Object.values(g.data||{}).some(v=>v.members.length===2));
+ const randomPersisted=await waitFor(async()=>{g=await get('groups/dialogue1',owner);return g.status===200&&Object.values(g.data||{}).some(v=>v.members.length===2)});
+ log('random_group_saved',randomPersisted);
  await admin.locator('#gmReset').click();
  log('reset_two_singletons',await admin.locator('.gm-single').count()===2);
  const opts=await admin.locator('#gmTarget option').evaluateAll(nodes=>nodes.map(n=>n.value));
@@ -36,8 +37,8 @@ async function waitFor(f){for(let i=0;i<28;i++){if(await f())return true;await s
  await admin.locator('#gmMove').click();
  log('manual_move_applied',await admin.locator('.gm-card').count()===1);
  await admin.locator('#gmSave').click();
- g=await get('groups/dialogue1',owner);
- log('manual_group_saved',g.status===200&&Object.values(g.data||{}).some(v=>v.members.includes(a.uid)&&v.members.includes(b.uid)));
+ const manualPersisted=await waitFor(async()=>{g=await get('groups/dialogue1',owner);return g.status===200&&Object.values(g.data||{}).some(v=>v.members.includes(a.uid)&&v.members.includes(b.uid))});
+ log('manual_group_saved',manualPersisted);
  await admin.screenshot({path:'screenshots/presenter-group-manager.png',fullPage:true});
  await admin.getByRole('button',{name:'닫기'}).click();
  await admin.getByRole('button',{name:'첫 번째 만남 시작'}).click();
