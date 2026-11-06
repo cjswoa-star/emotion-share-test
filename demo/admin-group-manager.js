@@ -90,7 +90,7 @@ function good(g,k){
  const sceneUnchanged=k!=='edit1'||Object.values(g||{}).every(x=>{const ss=[...new Set((x.members||[]).map(id=>byId.get(id)).filter(Boolean))];return ss.length<=1||x.lateJoinMixed===true});
  return sceneUnchanged&&expected.length===actual.length&&new Set(actual).size===actual.length&&expected.every(id=>actual.includes(id))&&Object.values(g).every(x=>x.members?.length>=1&&x.members.length<=8);
 }
-function getDraft(k){if(editing!==k||!draft){editing=k;draft=normalize(state.data?.groups?.[keyFor(k)]);if(!Object.keys(draft).length)draft=build(k);}return draft;}
+function getDraft(k){if(editing!==k||!draft){editing=k;const stored=state.data?.groups?.[keyFor(k)];draft=normalize(stored);const savedSize=Number(Object.values(stored||{})[0]?.targetSize||4);if(!Object.keys(draft).length||savedSize!==target(k))draft=build(k);}return draft;}
 function move(k,uid,to){
  const g=getDraft(k),from=Object.keys(g).find(id=>g[id].members.includes(uid));
  if(!from||!g[to]||from===to)return '이동할 사람과 다른 모둠을 선택해 주세요.';
@@ -214,7 +214,7 @@ renderDashboard=function(){
      try{
        const data=await get('sessions/'+state.sessionId)||state.data;
        const stored=data.groups?.[keyFor(k)];
-       const want=targetFrom(data,k),valid=stored&&Object.keys(stored).length&&good(stored,k),oldSize=valid?Number(Object.values(stored)[0]?.targetSize||want):want;
+       const want=targetFrom(data,k),valid=stored&&Object.keys(stored).length&&good(stored,k),oldSize=valid?Number(Object.values(stored)[0]?.targetSize||4):want;
        if(valid&&oldSize!==want&&!window.confirm('저장된 모둠을 새 기준 인원으로 재편성하여 만남을 시작할까요?')){el.disabled=false;return;}
        const chosen=valid&&oldSize===want?stored:buildWith(k,data,want);
        await setv('sessions/'+state.sessionId+'/groups/'+keyFor(k),chosen);
