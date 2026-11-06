@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: node qa/audit-start-gate.cjs
+      - run: node qa/audit-second-gate.cjs
