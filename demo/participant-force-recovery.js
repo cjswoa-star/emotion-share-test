@@ -64,13 +64,18 @@
    }
    if((phase==='life'||phase==='reflection')&&hasOverride(meta)&&(!state.focusScene||!state.deepDive?.reason)){
      if(state.finalReflection?.completedAt)return renderComplete();
-     return showLastReflection();
+     if(!state.focusScene)return showLastReflection();
+     // Preserve the SEL "real me" stages even when the earlier reason was skipped.
+     const d=state.deepDive||{};
+     if(d.nextAction)return renderSummary();
+     if(d.lifeLink)return renderNextAction();
+     return renderRoleTransition();
    }
    return previousRoute();
  };
  function watch(){
    const code=state.sessionId;
-   if(reviewMode||debugMode||!state.nickname||!code||state.backend!=='firebase')return;
+   if(reviewMode||debugMode||!state.nickname||!code||state.backend!=='firebase'||state.lateEntryPhase)return;
    if(stop&&watched===code)return;
    stop?.();watched=code;lastToken=null;
    stop=listen('sessions/'+code+'/meta',meta=>{
