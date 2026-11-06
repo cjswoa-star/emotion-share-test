@@ -17,11 +17,11 @@
   }
 
   function append(groups,entry,phase) {
-    const options = Object.entries(groups).filter(([,g]) => (g.members || []).length < 5);
+    const options = Object.entries(groups).filter(([,g]) => (g.members || []).length < 8);
     let best;
     if (phase === 'dialogue1') {
       const same = options.filter(([,g]) => g.sceneId === entry.sceneId);
-      best = (same.length ? same : options).sort((a,b)=>a[1].members.length-b[1].members.length)[0];
+      best = same.sort((a,b)=>a[1].members.length-b[1].members.length)[0]; // never mix different scenes automatically in first meeting
     } else {
       const different = options.filter(([,g])=>!(g.sceneIds||[]).includes(entry.sceneId));
       best = (different.length ? different : options).sort((a,b)=>a[1].members.length-b[1].members.length)[0];
