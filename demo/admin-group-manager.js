@@ -81,13 +81,21 @@ function refreshSceneFields(g){
    if(!g[id].members.length){delete g[id];return;}
    let sceneIds=[...new Set(g[id].members.map(uid=>rr.find(r=>r.id===uid)?.focusScene).filter(Boolean))];
    g[id].sceneIds=sceneIds;g[id].mixed=sceneIds.length>1;
+   if(!g[id].mixed)delete g[id].manualMixed;
    if(!g[id].sceneId)g[id].sceneId=sceneIds[0]||'';
  });
 }
 function good(g,k){
  const expected=eligible(k).map(r=>r.id),actual=Object.values(g||{}).flatMap(x=>x.members||[]);
  const byId=new Map(rows(state.data||{}).map(r=>[r.id,r.focusScene]));
- const sceneUnchanged=k!=='edit1'||Object.values(g||{}).every(x=>{const ss=[...new Set((x.members||[]).map(id=>byId.get(id)).filter(Boolean))];return ss.length<=1||x.lateJoinMixed===true});
+ const sceneUnchanged=k!=='edit1'||Object.values(g||{}).every(x=>{
+   const ss=[...new Set((x.members||[]).map(id=>byId.get(id)).filter(Boolean))];
+   if(ss.length<=1||x.lateJoinMixed===true)return true;
+   if(x.manualMixed!==true)return false;
+   // Presenter-only exception: every cross-scene member comes from a scene with just one chooser.
+   const loneScenes=new Set(eligible(k).filter(r=>eligible(k).filter(p=>p.focusScene===r.focusScene).length===1).map(r=>r.focusScene));
+   return ss.filter(id=>id!==x.sceneId).every(id=>loneScenes.has(id));
+ });
  return sceneUnchanged&&expected.length===actual.length&&new Set(actual).size===actual.length&&expected.every(id=>actual.includes(id))&&Object.values(g).every(x=>x.members?.length>=1&&x.members.length<=8);
 }
 function getDraft(k){if(editing!==k||!draft){editing=k;const stored=state.data?.groups?.[keyFor(k)];draft=normalize(stored);const savedSize=Number(Object.values(stored||{})[0]?.targetSize||4);if(!Object.keys(draft).length||savedSize!==target(k))draft=build(k);}return draft;}
@@ -95,8 +103,20 @@ function move(k,uid,to){
  const g=getDraft(k),from=Object.keys(g).find(id=>g[id].members.includes(uid));
  if(!from||!g[to]||from===to)return '이동할 사람과 다른 모둠을 선택해 주세요.';
  if(g[to].members.length>=8)return '한 모둠의 최대 인원은 8명입니다.';
- if(k==='edit1'&&g[to].sceneId!==rows(state.data||{}).find(r=>r.id===uid)?.focusScene)return '첫 번째 만남에서는 같은 장면 선택자끼리만 배치할 수 있습니다.';
- g[from].members=g[from].members.filter(id=>id!==uid);g[to].members.push(uid);refreshSceneFields(g);return '';
+ const picked=eligible(k).find(r=>r.id===uid);
+ if(!picked)return '선택한 참가자의 장면 정보가 없습니다.';
+ const crossScene=k==='edit1'&&g[to].sceneId!==picked.focusScene;
+ if(crossScene){
+   const sameSceneCount=eligible(k).filter(r=>r.focusScene===picked.focusScene).length;
+   if(sameSceneCount!==1)return '첫 번째 만남은 같은 장면끼리 구성합니다. 다른 장면으로 이동할 수 있는 예외는 해당 장면 선택자가 1명인 경우만 적용됩니다.';
+   const toIndex=Object.keys(g).indexOf(to)+1;
+   const okay=window.confirm('이 장면을 선택한 사람은 1명뿐입니다. 대화를 위해 모둠 '+toIndex+'(다른 장면)으로 예외 합류시키겠습니까?\n해당 모둠은 ‘장면 혼합 · 진행자 예외 배치’로 표시됩니다.');
+   if(!okay)return '예외 이동을 취소했습니다. 기존 모둠은 유지됩니다.';
+ }
+ g[from].members=g[from].members.filter(id=>id!==uid);
+ g[to].members.push(uid);
+ if(crossScene)g[to].manualMixed=true;
+ refreshSceneFields(g);return crossScene?'다른 장면 모둠에 예외 합류시켰습니다. 모둠 구성을 확인한 뒤 저장하세요.':'';
 }
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function mergeSingles(k){
@@ -125,7 +145,7 @@ function cards(k){
  return Object.entries(g).map(([id,x],i)=>{
    const people=x.members.map(uid=>rr.find(r=>r.id===uid)).filter(Boolean);
    let scenes=[...new Set(people.map(r=>r.focusScene))];
-   const desc=scenes.length>1?'장면 혼합':(SCENES.find(s=>s.id===scenes[0])?.title||'장면 미정');
+   const desc=scenes.length>1?(x.manualMixed?'장면 혼합 · 진행자 예외 배치':'장면 혼합'):(SCENES.find(s=>s.id===scenes[0])?.title||'장면 미정');
    return '<article class="gm-card '+(people.length===1?'gm-single':'')+'"><h3>모둠 '+(i+1)+' <small>'+people.length+'명</small></h3><p>'+esc(desc)+'</p><div>'+people.map(r=>'<span>'+esc(r.nickname)+'<small> '+esc(SCENES.find(s=>s.id===r.focusScene)?.n||'')+'</small></span>').join('')+'</div></article>';
  }).join('')||'<p>현재 배치할 참가자가 없습니다.</p>';
 }
@@ -135,10 +155,10 @@ function editor(k,msg=''){
  el.querySelector('.overlay-title').innerHTML='<div class="kicker">FAMOUS PEOPLE SEL · 진행자</div><h2>'+title+' 번째 만남 · 모둠 편집</h2><p>모둠 저장과 단계 시작은 별개입니다. 참가자는 진행자가 만남 시작을 누를 때 이동합니다.</p>';
  const groupOpts=Object.entries(g).map(([id,x],i)=>'<option value="'+esc(id)+'">모둠 '+(i+1)+' · '+x.members.length+'명</option>').join('');
  const studentOpts=rr.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.nickname)+'</option>').join('');
- const commands=allowed?'<div class="gm-actions"><button class="btn soft" id="gmReset">선택 인원으로 다시 편성</button><button class="btn soft" id="gmRandom">1명 모둠 무작위 합류</button><button class="btn primary" id="gmSave">모둠 저장</button></div><div class="gm-move"><label>참가자<select id="gmStudent">'+studentOpts+'</select></label><label>옮길 곳<select id="gmTarget">'+groupOpts+'</select></label><button class="btn soft" id="gmMove">직접 배치</button></div>':'<p>이 단계에서는 이전 모둠을 수정할 수 없습니다.</p>';
+ const commands=allowed?'<div class="gm-actions"><button class="btn soft" id="gmReset">선택 인원으로 다시 편성</button><button class="btn soft" id="gmRandom">1명 모둠 같은 장면 합류</button><button class="btn primary" id="gmSave">모둠 저장</button></div><div class="gm-move"><label>참가자<select id="gmStudent">'+studentOpts+'</select></label><label>옮길 곳<select id="gmTarget">'+groupOpts+'</select></label><button class="btn soft" id="gmMove">직접 배치</button></div>':'<p>이 단계에서는 이전 모둠을 수정할 수 없습니다.</p>';
  const body=el.querySelector('.overlay-body');
  const opts=[3,4,5,6,7,8].map(n=>'<option value="'+n+'"'+(target(k)===n?' selected':'')+'>'+n+'명</option>').join('');
- const chooser='<div class="gm-size"><label>기준 인원 <select id="gmSize"'+(allowed?'':' disabled')+'>'+opts+'</select></label><span>예상 모둠 인원: '+Object.values(g).map(x=>x.members.length+'명').join(' · ')+'</span></div>';
+ const chooser='<div class="gm-size"><label>기준 인원 <select id="gmSize"'+(allowed?'':' disabled')+'>'+opts+'</select></label><span>예상 모둠 인원: '+Object.values(g).map(x=>x.members.length+'명').join(' · ')+'</span></div>'+(k==='edit1'?'<p class="gm-exception-guide">기본은 같은 장면끼리 편성합니다. 단, 한 장면을 선택한 사람이 1명뿐이라면 진행자가 다른 장면 모둠으로 직접 배치할 수 있습니다. 확인 후 저장해야 적용됩니다.</p>':'');
  body.innerHTML='<div class="gm-summary">배치 대상 '+rr.length+'명 · '+Object.keys(g).length+'모둠 · 기준 '+target(k)+'명 (최대 8명)</div>'+chooser+commands+'<p class="gm-msg">'+esc(msg)+'</p><div class="gm-grid">'+cards(k)+'</div>';
  if(!allowed)return;
  body.querySelector('#gmSize').onchange=async ev=>{
@@ -227,6 +247,6 @@ renderDashboard=function(){
 };
 const style=document.createElement('style');
 style.textContent='.gm-summary{padding:12px;background:#ebf3f2;border-radius:12px;font-weight:900;margin-bottom:12px}.gm-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.gm-move{display:flex;gap:10px;align-items:end;flex-wrap:wrap;padding:13px;background:#fff;border-radius:12px;margin:12px 0;border:1px solid #d0dfe1}.gm-move label{flex:1;min-width:170px;display:grid;gap:6px;font-size:13px;font-weight:900}.gm-move select{background:#fff;color:#35556a;padding:10px;border:1px solid #c6d3d8;border-radius:10px;min-width:0}.gm-msg{min-height:21px;color:#a3543b;font-weight:900;font-size:13px}.gm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px}.gm-card{background:#fff;border:2px solid #d2e0de;border-radius:16px;padding:14px}.gm-single{background:#fff8e9;border-color:#dda668}.gm-card h3{font-size:22px;margin:0 0 5px}.gm-card h3 small{font-size:13px;color:#607984}.gm-card p{color:#71848a;font-size:13px;margin:0 0 10px}.gm-card>div{display:flex;gap:6px;flex-wrap:wrap}.gm-card>div span{background:#e8f1ec;border-radius:11px;padding:8px;font-size:16px;font-weight:900}.gm-card>div small{font-size:11px;color:#698b93}';
-style.textContent+='.gm-size{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;margin:10px 0;background:#f4fafb;border:1px solid #d4e4e6;border-radius:12px}.gm-size label,.gm-short{font-size:13px;font-weight:900;color:#35556a}.gm-size select,.gm-short select{background:white;border:1px solid #bfd3d6;border-radius:10px;padding:8px;color:#35556a}.gm-short{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.gm-short small{font-size:12px;color:#647e87}.gm-short select:disabled{opacity:.5}';
+style.textContent+='.gm-exception-guide{margin:10px 0;padding:11px 14px;border:1px solid #c9dcdf;border-left:4px solid #547e91;border-radius:8px;background:#f1f8fa;color:#365b70;font-size:13px;line-height:1.5;font-weight:750}.gm-size{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;margin:10px 0;background:#f4fafb;border:1px solid #d4e4e6;border-radius:12px}.gm-size label,.gm-short{font-size:13px;font-weight:900;color:#35556a}.gm-size select,.gm-short select{background:white;border:1px solid #bfd3d6;border-radius:10px;padding:8px;color:#35556a}.gm-short{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.gm-short small{font-size:12px;color:#647e87}.gm-short select:disabled{opacity:.5}';
 document.head.appendChild(style);
 })();
