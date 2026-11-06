@@ -27,7 +27,7 @@ function buildSized1(data,want){
  });return o;
 }
 function buildSized2(data,want){
- const rr=rows(data).filter(r=>r.focusScene&&(r.deepDive?.reason||data?.participants?.[r.id]?.lateEntryPhase));
+ const rr=rows(data).filter(r=>r.focusScene&&(r.deepDive?.reason||data?.participants?.[r.id]?.lateEntryPhase||data?.meta?.forceDialogue2At));
  const b={};SCENES.forEach(sc=>b[sc.id]=rr.filter(r=>r.focusScene===sc.id).sort((a,z)=>a.id.localeCompare(z.id)));
  const ordered=[];
  while(Object.values(b).some(a=>a.length)){
@@ -71,7 +71,7 @@ function buildSized2(data,want){
 const buildWith=(k,data,want)=>k==='edit1'?buildSized1(data,want):buildSized2(data,want);
 
 const keyFor=k=>k==='edit1'?'dialogue1':'dialogue2';
-const eligible=k=>rows(state.data||{}).filter(r=>k==='edit1'?r.focusScene:(r.focusScene&&(r.deepDive?.reason||(state.data?.meta?.phase==='dialogue2'&&state.data?.participants?.[r.id]?.lateEntryPhase))));
+const eligible=k=>rows(state.data||{}).filter(r=>k==='edit1'?r.focusScene:(r.focusScene&&(r.deepDive?.reason||state.data?.meta?.forceDialogue2At||(state.data?.meta?.phase==='dialogue2'&&state.data?.participants?.[r.id]?.lateEntryPhase))));
 const mutable=k=>k==='edit1'?['selecting','dialogue1'].includes(state.data?.meta?.phase):['deep','dialogue2'].includes(state.data?.meta?.phase);
 const build=k=>buildWith(k,state.data||{},target(k));
 function normalize(g){return JSON.parse(JSON.stringify(g||{}));}
