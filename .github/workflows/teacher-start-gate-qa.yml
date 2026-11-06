@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/teacher-start-gate-qa.yml'
+      - 'qa/waiting-gate-e2e.cjs'
   workflow_dispatch:
 permissions:
   contents: read
