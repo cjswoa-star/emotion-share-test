@@ -19,6 +19,7 @@ jobs:
         run: |
           mkdir -p screenshots
           node qa/presentation-e2e-20261106.cjs
+          node qa/participant-onboarding-probe.cjs
       - name: Save a projector screenshot
         if: always()
         uses: actions/upload-artifact@v4
