@@ -70,6 +70,42 @@ function buildSized2(data,want){
 }
 const buildWith=(k,data,want)=>k==='edit1'?buildSized1(data,want):buildSized2(data,want);
 
+/* A forced second meeting can add people who have not completed "reason".
+   Keep any already-saved manual assignments; only fill previously unassigned seats. */
+function mergeSavedForcedGroups(k,data,stored,want){
+ if(k!=='edit2'||!data?.meta?.forceDialogue2At||!stored||!Object.keys(stored).length)return null;
+ const previous=JSON.parse(JSON.stringify(stored));
+ const gs=Object.entries(previous),participants=rows(data).filter(r=>r.focusScene);
+ const known=new Set(participants.map(r=>r.id)),assigned=new Set();
+ for(const [,g] of gs){
+   if(!Array.isArray(g.members)||!g.members.length||g.members.length>8)return null;
+   if(Number(g.targetSize||4)!==want)return null;
+   for(const id of g.members){if(!known.has(id)||assigned.has(id))return null;assigned.add(id)}
+ }
+ const sceneOf=new Map(participants.map(r=>[r.id,r.focusScene]));
+ function ids(g){return new Set(g.members.map(uid=>sceneOf.get(uid)).filter(Boolean))}
+ let maxId=Math.max(0,...Object.keys(previous).map(id=>Number(id.replace(/[^0-9]/g,''))||0));
+ for(const p of participants.filter(r=>!assigned.has(r.id))){
+   const candidates=Object.entries(previous).filter(([,g])=>g.members.length<8);
+   const diversify=candidates.filter(([,g])=>!ids(g).has(p.focusScene));
+   const ranked=(diversify.length?diversify:candidates).sort((a,b)=>{
+      const aSize=a[1].members.length,bSize=b[1].members.length;
+      return (aSize>=want?1:0)-(bSize>=want?1:0)||aSize-bSize;
+   });
+   if(ranked.length){ranked[0][1].members.push(p.id)}
+   else{
+     const id='g'+String(++maxId).padStart(2,'0');
+     previous[id]={mode:'mixedScenes',targetSize:want,members:[p.id],sceneIds:[p.focusScene],createdAt:Date.now()};
+   }
+ }
+ Object.values(previous).forEach(g=>{
+   g.sceneIds=[...ids(g)];
+   g.mixed=g.sceneIds.length>1;
+ });
+ return previous;
+}
+
+
 const keyFor=k=>k==='edit1'?'dialogue1':'dialogue2';
 const eligible=k=>rows(state.data||{}).filter(r=>k==='edit1'?r.focusScene:(r.focusScene&&(r.deepDive?.reason||state.data?.meta?.forceDialogue2At||(state.data?.meta?.phase==='dialogue2'&&state.data?.participants?.[r.id]?.lateEntryPhase))));
 const mutable=k=>k==='edit1'?['selecting','dialogue1'].includes(state.data?.meta?.phase):['deep','dialogue2'].includes(state.data?.meta?.phase);
@@ -234,7 +270,7 @@ renderDashboard=function(){
        const stored=data.groups?.[keyFor(k)];
        const want=targetFrom(data,k),valid=stored&&Object.keys(stored).length&&good(stored,k),oldSize=valid?Number(Object.values(stored)[0]?.targetSize||4):want;
        if(valid&&oldSize!==want&&!window.confirm('저장된 모둠을 새 기준 인원으로 재편성하여 만남을 시작할까요?')){el.disabled=false;return;}
-       const chosen=valid&&oldSize===want?stored:buildWith(k,data,want);
+       const chosen=valid&&oldSize===want?stored:(mergeSavedForcedGroups(k,data,stored,want)||buildWith(k,data,want));
        await setv('sessions/'+state.sessionId+'/groups/'+keyFor(k),chosen);
        await upd('sessions/'+state.sessionId+'/meta',k==='edit1'?
          {phase:'dialogue1',dialogue1Open:true,dialogue1GeneratedAt:Date.now()}:
