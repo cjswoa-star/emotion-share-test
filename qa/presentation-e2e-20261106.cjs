@@ -39,6 +39,8 @@ try{
   await Promise.all([studentA.waitForFunction(()=>!!window.__FPSEL__,{timeout:24000}),studentB.waitForFunction(()=>!!window.__FPSEL__,{timeout:24000})]);
   report('two_isolated_participant_devices_loaded',true);
   report('participant_seven_scenes',await studentA.evaluate(()=>window.__FPSEL__.SCENES.length===7));
+  const joinRendered=await until(async()=>{const t=await studentA.locator('body').innerText();return !!t.trim().length},30000);
+  console.log('PARTICIPANT_RENDER_READY '+joinRendered);
   const uiInfo=await studentA.evaluate(()=>({title:document.title,body:document.body.innerText.slice(0,650),buttons:[...document.querySelectorAll('button')].slice(0,18).map(x=>x.textContent.trim().slice(0,45)),inputs:[...document.querySelectorAll('input')].slice(0,8).map(x=>({id:x.id,placeholder:x.placeholder}))}));
   console.log('PARTICIPANT_INITIAL_UI '+JSON.stringify(uiInfo));
   report('participant_join_page_rendered',!!uiInfo.body.length);
@@ -88,7 +90,13 @@ try{
   await admin.getByRole('button',{name:'학생별 완료율'}).click();
   report('progress_has_all_25',await admin.locator('#overlay .sel-student').count()===25);
   await admin.getByRole('button',{name:'닫기'}).click();
-  await admin.getByRole('button',{name:'두 번째 만남 시작'}).click();
+  const disabledBefore=await admin.locator('#open2').isDisabled();
+  report('second_stage_waits_for_incomplete_people',disabledBefore);
+  const doneTemplate={emotionWords:['평온함'],intensity:'보통',bodySignals:['숨이 달라졌다'],urge:'기다리고 싶었다',reason:'상황이 예상과 달라서',lifeLink:'있어요',nextAction:'다른 방법을 찾아보기'};
+  for(let i=23;i<=25;i++){const p='participants/qa-20261106-'+String(i).padStart(3,'0')+'/deepDive';const write=await request(p,'PUT',doneTemplate);report('remaining_deep_dive_'+i,write.status===200)}
+  const enabled=await until(async()=>await admin.locator('#open2').isEnabled(),18000);
+  report('second_stage_unlocks_after_all_finish',enabled);
+  await admin.getByRole('button',{name:'두 번째 만남 시작'}).click({timeout:7000});
   report('second_meeting_started',await until(async()=>{let r=await request('meta');return r.data?.phase==='dialogue2'}));
   await admin.getByRole('button',{name:'2차 만남 모둠'}).click();
   report('second_groups_projector',await admin.locator('#overlay .group-card').count()>=1);
