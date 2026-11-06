@@ -5,7 +5,7 @@ let draft=null,editing=null;
 const baseDashboard=renderDashboard,baseOverlay=openOverlay;
 const keyFor=k=>k==='edit1'?'dialogue1':'dialogue2';
 const eligible=k=>rows(state.data||{}).filter(r=>k==='edit1'?r.focusScene:(r.focusScene&&r.deepDive?.reason));
-const mutable=k=>k==='edit1'?['collecting','dialogue1'].includes(state.data?.meta?.phase):['deep','dialogue2'].includes(state.data?.meta?.phase);
+const mutable=k=>k==='edit1'?['selecting','dialogue1'].includes(state.data?.meta?.phase):['deep','dialogue2'].includes(state.data?.meta?.phase);
 const build=k=>(k==='edit1'?build1:build2)(state.data||{});
 function normalize(g){return JSON.parse(JSON.stringify(g||{}));}
 function refreshSceneFields(g){
@@ -19,7 +19,9 @@ function refreshSceneFields(g){
 }
 function good(g,k){
  const expected=eligible(k).map(r=>r.id),actual=Object.values(g||{}).flatMap(x=>x.members||[]);
- return expected.length===actual.length&&new Set(actual).size===actual.length&&expected.every(id=>actual.includes(id))&&Object.values(g).every(x=>x.members?.length>=1&&x.members.length<=5);
+ const byId=new Map(rows(state.data||{}).map(r=>[r.id,r.focusScene]));
+ const sceneUnchanged=k!=='edit1'||Object.values(g||{}).every(x=>{const actualScenes=[...new Set((x.members||[]).map(id=>byId.get(id)).filter(Boolean))];const storedScenes=(x.sceneIds&&x.sceneIds.length?x.sceneIds:[x.sceneId]).filter(Boolean);return actualScenes.length===storedScenes.length&&actualScenes.every(sc=>storedScenes.includes(sc))});
+ return sceneUnchanged&&expected.length===actual.length&&new Set(actual).size===actual.length&&expected.every(id=>actual.includes(id))&&Object.values(g).every(x=>x.members?.length>=1&&x.members.length<=5);
 }
 function getDraft(k){if(editing!==k||!draft){editing=k;draft=normalize(state.data?.groups?.[keyFor(k)]);if(!Object.keys(draft).length)draft=build(k);}return draft;}
 function move(k,uid,to){
