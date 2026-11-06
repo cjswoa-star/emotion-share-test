@@ -81,7 +81,7 @@
     try{
       const c=await genCode();
       const a=await ensureAuthOptional();
-      const base={createdAt:Date.now(),status:'active',phase:'collecting',dialogue1Open:false,dialogue2Open:false,version:'7.2-recovery'};
+      const base={createdAt:Date.now(),status:'active',phase:'waiting',dialogue1Open:false,dialogue2Open:false,version:'7.2-recovery'};
       const meta=a?.uid?{...base,ownerUid:a.uid}:base;
       await authSmart(`sessions/${c}/meta`,'PUT',meta);
       state.sessionId=c;localStorage.setItem('FPSEL_LAST_ADMIN_SESSION',c);history.replaceState(null,'',aUrl(c));
