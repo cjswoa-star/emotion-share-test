@@ -1,0 +1,65 @@
+/* Restored from the approved Famous People v8.4 exhibition frame in v10/index.html.
+   Used only inside the dedicated presenter final-word overlay. */
+#overlay .fp-final-frame-overlay{
+ position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+ padding:clamp(12px,3vw,46px);
+ background:radial-gradient(ellipse at center,rgba(15,32,43,.75),rgba(6,16,25,.95));
+ backdrop-filter:blur(9px);overflow:auto;
+}
+#overlay .fp-final-frame-overlay .quote-frame{
+ position:relative;isolation:isolate;width:min(100%,1060px);max-height:94dvh;overflow:auto;
+ border:0;outline:0;border-radius:3px;padding:clamp(13px,2.5vw,28px);
+ background:linear-gradient(135deg,#594025 0%,#d9b977 8%,#876139 15%,#f0d99d 23%,#85603a 34%,#e0be79 50%,#6f4b2b 65%,#e3c482 81%,#604025 100%);
+ box-shadow:0 0 0 2px #3b2b1d,0 0 0 5px #c2a06b,0 0 0 7px #4c3726,0 35px 90px #000b,inset 0 0 0 2px #f5dfa7,inset 0 0 12px 6px #3d281d77;
+}
+#overlay .fp-final-frame-overlay .quote-frame::before{
+ content:'';position:absolute;inset:clamp(8px,1.5vw,16px);border:2px solid #ffebae88;pointer-events:none;z-index:1;
+}
+#overlay .fp-final-frame-overlay .quote-inner{
+ position:relative;min-height:min(67vh,590px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+ background:radial-gradient(ellipse at 50% 40%,#fffdf8 0%,#fbf6e9 65%,#eae0c8 100%);
+ border:clamp(8px,1.5vw,16px) solid #f4e9d3;
+ box-shadow:inset 0 0 0 1px #b49a69,inset 0 0 0 8px #fffaf0,inset 0 0 0 9px #d0b988,inset 0 0 45px #9e835d2e,0 0 0 2px #654827;
+ padding:clamp(42px,5vw,64px) clamp(24px,8vw,100px);
+}
+#overlay .fp-final-frame-overlay .quote-inner::before,
+#overlay .fp-final-frame-overlay .quote-inner::after{
+ content:'✧';position:absolute;color:#b69a68;font-size:clamp(18px,2.6vw,30px);line-height:1;
+}
+#overlay .fp-final-frame-overlay .quote-inner::before{top:23px;left:26px}
+#overlay .fp-final-frame-overlay .quote-inner::after{bottom:23px;right:26px}
+#overlay .fp-final-frame-overlay .quote-foil{font-size:clamp(9px,1.15vw,12px);letter-spacing:.3em;font-weight:700;color:#a38c67;margin-bottom:clamp(13px,2vw,23px)}
+#overlay .fp-final-frame-overlay .quote-emblem{font-family:Georgia,serif;font-size:clamp(31px,4.2vw,49px);color:#b18b4e;line-height:1;margin-bottom:8px}
+#overlay .fp-final-frame-overlay .quote-kicker{font-size:clamp(17px,2.3vw,24px);font-weight:700;letter-spacing:.08em;color:#7e684b;margin:0 0 16px}
+#overlay .fp-final-frame-overlay .quote-rule{width:min(30%,190px);height:2px;background:linear-gradient(90deg,transparent,#b7955b,transparent);margin:0 auto clamp(16px,2.5vw,26px)}
+#overlay .fp-final-frame-overlay .quote-text{max-width:100%;font-size:clamp(26px,4.4vw,55px);font-weight:750;line-height:1.6;letter-spacing:-.035em;color:#243c4b;white-space:pre-wrap;overflow-wrap:anywhere;word-break:keep-all;text-wrap:pretty;text-shadow:0 1px 0 #fff}
+#overlay .fp-final-frame-overlay .quote-rule-bottom{margin:clamp(18px,2.8vw,30px) auto 14px}
+#overlay .fp-final-frame-overlay .quote-signature{font-size:clamp(16px,2vw,22px);font-weight:650;color:#816b4b;letter-spacing:.02em}
+#overlay .fp-final-frame-overlay .quote-close{
+ position:sticky;float:right;right:0;top:0;z-index:10;margin:-4px -4px -50px 0;
+ width:48px;height:48px;background:#fff9ed;color:#4c3828;border:2px solid #ac8955;
+ border-radius:50%;font-size:29px;line-height:1;box-shadow:0 3px 12px #0004;cursor:pointer;
+}
+#overlay .fp-final-frame-overlay .quote-close:focus-visible{outline:4px solid #2e668a;outline-offset:3px}
+#overlay .fp-final-tools{
+ display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+ margin:0 0 12px;padding:10px 14px;border-radius:12px;background:#f2f5f2;border:1px solid #d7e2e0;
+ font-size:15px;font-weight:800;color:#38586a;
+}
+#overlay .fp-final-tools label{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+#overlay .fp-final-tools input{width:20px;height:20px;accent-color:#31576d}
+#overlay .fp-final-tools small{font-size:13px;font-weight:600;color:#6b7e82}
+#overlay .fp-final-grid{height:auto;min-height:calc(100% - 116px);grid-template-rows:repeat(var(--rows),minmax(104px,1fr))}
+#overlay .fp-final-grid .final-card{min-height:104px}
+@media(max-width:650px){
+ #overlay .fp-final-frame-overlay{padding:10px}
+ #overlay .fp-final-frame-overlay .quote-frame{padding:11px;max-height:93dvh}
+ #overlay .fp-final-frame-overlay .quote-inner{min-height:55vh;padding:50px 24px 42px;border-width:7px}
+ #overlay .fp-final-frame-overlay .quote-text{font-size:clamp(24px,6.2vw,35px)}
+ #overlay .fp-final-frame-overlay .quote-close{width:42px;height:42px}
+ #overlay .fp-final-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto}
+}
+@media(prefers-reduced-motion:no-preference){
+ #overlay .fp-final-frame-overlay .quote-frame{animation:fpQuoteReveal .32s ease-out both}
+ @keyframes fpQuoteReveal{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+}
