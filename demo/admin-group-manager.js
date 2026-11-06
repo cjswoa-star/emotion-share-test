@@ -43,6 +43,29 @@ function buildSized2(data,want){
    if(!chosen)throw new Error('편성 정원 오류');
    chosen.members.push(p.id);chosen.sceneIds.add(p.focusScene);
  }
+
+ // Improve scene diversity by swapping one member between already balanced groups.
+ // Group capacities and participant membership remain unchanged.
+ const sceneOf=new Map(rr.map(r=>[r.id,r.focusScene]));
+ const penalty=g=>g.members.length-new Set(g.members.map(id=>sceneOf.get(id))).size;
+ let improved=true;
+ while(improved){
+   improved=false;
+   outer:for(let i=0;i<gs.length;i++){
+     for(let j=i+1;j<gs.length;j++){
+       const a=gs[i],b=gs[j],before=penalty(a)+penalty(b);
+       if(!before)continue;
+       for(let x=0;x<a.members.length;x++){
+         for(let y=0;y<b.members.length;y++){
+           const temp=a.members[x];a.members[x]=b.members[y];b.members[y]=temp;
+           if(penalty(a)+penalty(b)<before){improved=true;break outer;}
+           b.members[y]=a.members[x];a.members[x]=temp;
+         }
+       }
+     }
+   }
+ }
+ gs.forEach(g=>g.sceneIds=new Set(g.members.map(id=>sceneOf.get(id))));
  const o={};gs.forEach(g=>o[g.id]={mode:'mixedScenes',members:g.members,sceneIds:[...g.sceneIds],targetSize:want,createdAt:Date.now()});return o;
 }
 const buildWith=(k,data,want)=>k==='edit1'?buildSized1(data,want):buildSized2(data,want);
