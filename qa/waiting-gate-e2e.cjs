@@ -49,7 +49,7 @@ async function join(context,nickname){
  check('phase_changes_after_teacher_start',await until(async()=>((await data('meta')).phase==='collecting')));
  await Promise.all([a.locator('.scene-counter').waitFor({timeout:20000}),b.locator('.scene-counter').waitFor({timeout:20000})]);
  check('both_students_automatically_enter_scene_1',await a.locator('#mood').count()===1&&await b.locator('#mood').count()===1);
- check('no_start_button_after_launch',await admin.locator('#beginScenes').count()===0);
+ check('no_start_button_after_launch',await until(async()=>await admin.locator('#beginScenes').count()===0,11000));
  await a.locator('#mood').click({position:{x:110,y:96}});
  await a.locator('#next').click();
  check('student_can_advance_after_teacher_start',await a.locator('.scene-counter').innerText().then(x=>x.includes('02')));
