@@ -75,7 +75,9 @@
    stop?.();watched=code;lastToken=null;
    stop=listen('sessions/'+code+'/meta',meta=>{
      if(!meta?.phase)return;
-     const token=meta.phase+':'+Number(meta.forceSelectionAt||0)+':'+Number(meta.forceDialogue1At||0)+':'+Number(meta.forceDialogue2At||0);
+     // Route only when the phase changes, never when the marker is prewritten;
+     // this avoids interrupting an unfinished textarea during the confirmation step.
+     const token=meta.phase;
      if(lastToken===null){lastToken=token;return;}
      if(token===lastToken)return;
      lastToken=token;
