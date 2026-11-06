@@ -90,11 +90,9 @@ function good(g,k){
  const byId=new Map(rows(state.data||{}).map(r=>[r.id,r.focusScene]));
  const sceneUnchanged=k!=='edit1'||Object.values(g||{}).every(x=>{
    const ss=[...new Set((x.members||[]).map(id=>byId.get(id)).filter(Boolean))];
-   if(ss.length<=1||x.lateJoinMixed===true)return true;
-   if(x.manualMixed!==true)return false;
-   // Presenter-only exception: every cross-scene member comes from a scene with just one chooser.
-   const loneScenes=new Set(eligible(k).filter(r=>eligible(k).filter(p=>p.focusScene===r.focusScene).length===1).map(r=>r.focusScene));
-   return ss.filter(id=>id!==x.sceneId).every(id=>loneScenes.has(id));
+   // A confirmed presenter-only exception stays valid even if more people join later.
+   // The move() handler limits *new* cross-scene transfers to the sole chooser.
+   return ss.length<=1||x.lateJoinMixed===true||x.manualMixed===true;
  });
  return sceneUnchanged&&expected.length===actual.length&&new Set(actual).size===actual.length&&expected.every(id=>actual.includes(id))&&Object.values(g).every(x=>x.members?.length>=1&&x.members.length<=8);
 }
