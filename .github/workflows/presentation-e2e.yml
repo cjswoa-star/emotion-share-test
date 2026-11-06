@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/presentation-e2e.yml'
+      - 'qa/presentation-e2e-20261106.cjs'
   workflow_dispatch:
 permissions:
   contents: read
