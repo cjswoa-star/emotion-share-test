@@ -3,31 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#102939">
+<meta name="theme-color" content="#f6fbf8">
 <title>2026 경기 RAS 공개워크숍 · 진행자 통합 화면</title>
 <style>
-:root{--ink:#102939;--light:#f6faf8;--dim:#c9dde4;--mint:#80e0c4;--amber:#ffd68d;--blue:#a0d8ff}
+:root{--ink:#203b43;--light:#203b43;--dim:#607781;--mint:#62d7b4;--amber:#ffbb89;--blue:#8ccfff}
 *{box-sizing:border-box}
 html{font-family:system-ui,-apple-system,"Malgun Gothic","Noto Sans KR",sans-serif}
-body{margin:0;background:radial-gradient(circle at 0% 0%,#28596b,transparent 44%),radial-gradient(circle at 100% 100%,#1c4955,transparent 43%),#102939;color:var(--light);min-height:100vh}
+body{margin:0;background:radial-gradient(circle at 5% 5%,#d9fff1,transparent 36%),radial-gradient(circle at 98% 12%,#e0f2ff,transparent 38%),linear-gradient(145deg,#f8fcf8,#fffaf4);color:var(--ink);min-height:100vh}
 main{max-width:1600px;margin:auto;padding:clamp(20px,4vw,62px)}
 header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:start;margin-bottom:34px}
-.kicker{color:var(--mint);font-weight:900;letter-spacing:.14em;font-size:clamp(13px,1.3vw,17px)}
+.kicker{color:#148a76;font-weight:900;letter-spacing:.14em;font-size:clamp(13px,1.3vw,17px)}
 h1{font-size:clamp(29px,3.45vw,53px);letter-spacing:-.045em;line-height:1.25;margin:13px 0 8px}
-.lead{font-size:clamp(16px,1.4vw,21px);color:var(--dim);margin:0;line-height:1.6}
-.date{padding:13px 17px;border:1px solid #648395;border-radius:15px;background:#204458;font-weight:800;line-height:1.6}
+.lead{font-size:clamp(16px,1.4vw,21px);color:#5c7479;margin:0;line-height:1.6}
+.date{padding:13px 17px;border:1px solid #c9e9dd;border-radius:15px;background:#e7faf1;font-weight:800;line-height:1.6}
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-.card{background:linear-gradient(145deg,#21465a,#143143);border-radius:22px;border:1px solid #426679;padding:29px;min-height:448px;display:flex;flex-direction:column;box-shadow:0 15px 35px #0019;position:relative;overflow:hidden}
-.card:before{content:"";height:6px;background:var(--a);position:absolute;top:0;left:0;right:0}
-.num{font-size:clamp(50px,5.5vw,80px);font-weight:900;color:var(--a);line-height:1;letter-spacing:-.06em}
-.step{color:var(--a);font-weight:900;font-size:15px;margin-top:16px}
+.card{background:#ffffffed;border-radius:24px;border:1px solid #deebe8;padding:29px;min-height:390px;display:flex;flex-direction:column;box-shadow:0 15px 35px #4a7c751a;position:relative;overflow:hidden}
+.card:before{content:"";height:7px;background:var(--a);position:absolute;top:0;left:0;right:0}
+.num{font-size:clamp(50px,5.5vw,80px);font-weight:900;color:#267c75;line-height:1;letter-spacing:-.06em}
+.step{color:#38867c;font-weight:900;font-size:15px;margin-top:16px}
 h2{font-size:clamp(24px,2.3vw,33px);letter-spacing:-.03em;margin:9px 0}
-.desc{font-size:clamp(15px,1.3vw,18px);line-height:1.7;color:#d8e7eb;margin:0}
-.note{color:#b8d2da;line-height:1.6;font-size:14px;margin-top:auto;padding:23px 0 12px}
+.desc{font-size:clamp(15px,1.3vw,18px);line-height:1.7;color:#526a70;margin:0}
+.note{color:#6d8589;line-height:1.6;font-size:14px;margin-top:auto;padding:23px 0 12px}
 .actions{display:grid;gap:10px}
-.action{display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:12px;min-height:60px;padding:13px 16px;font-size:clamp(16px,1.4vw,20px);font-weight:950;background:var(--a);color:var(--ink);cursor:pointer;text-align:center}
+.action{display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:14px;min-height:65px;padding:13px 16px;font-size:clamp(17px,1.5vw,21px);font-weight:950;background:var(--a);color:#183c42;cursor:pointer;text-align:center;box-shadow:0 5px 0 #173e4015}
 .action.secondary{background:transparent;border:2px solid #95b3c1;color:#f4f9fc}
-.action:hover,.action:focus-visible{outline:3px solid #fff9;outline-offset:2px}
+.action:hover,.action:focus-visible{outline:3px solid #318fbd;outline-offset:3px;filter:saturate(1.12)}
 .under{margin-top:26px;padding:20px 25px;border-radius:16px;background:#1d3d4f;border:1px solid #547688;font-size:16px;color:#d5e5e9;line-height:1.7}
 .under strong{color:#fff}
 footer{color:#adc8d0;margin-top:20px;font-size:13px;line-height:1.7}
@@ -50,7 +50,7 @@ footer{color:#adc8d0;margin-top:20px;font-size:13px;line-height:1.7}
 <div>
 <div class="kicker">2026 GYEONGGI RAS · WORKSHOP</div>
 <h1>문화예술교육과 사회정서학습을 잇는 연극교육</h1>
-<p class="lead">진행자 통합 화면 · 감정확대경부터 SEL 사후활동과 설문까지</p>
+<p class="lead">감정확대경 · FAMOUS PEOPLE · 워크숍 설문</p>
 </div>
 <div class="date">경기도연극교육연구회<br>2026. 11. 7. (토)</div>
 </header>
@@ -59,11 +59,8 @@ footer{color:#adc8d0;margin-top:20px;font-size:13px;line-height:1.7}
 <div class="num">01</div><div class="step">과정드라마 전 · 감정 탐색</div>
 <h2>감정확대경</h2>
 <p class="desc">감정의 이름과 의미를 살펴보고 감정지도와 퀴즈를 함께 체험합니다.</p>
-<div class="note">참가자에게 QR을 보여주고 직접 체험하도록 안내하세요.</div>
-<div class="actions">
-<a class="action" target="_blank" rel="noopener noreferrer" href="https://cjswoa-star.github.io/emotion-magnifier/index-v3.html">감정확대경 열기 ↗</a>
-<button class="action secondary" type="button" data-qr="emotion">감정확대경 QR 크게</button>
-</div>
+<div class="note">감정확대경 체험 화면으로 이동합니다.</div>
+<div class="actions"><a class="action"  target="_blank" rel="noopener noreferrer" href="https://cjswoa-star.github.io/emotion-magnifier/index-v3.html">진행자</a></div>
 </article>
 <article class="card" style="--a:var(--amber)">
 <div class="num">02</div><div class="step">과정드라마 후 · SEL 사후활동</div>
@@ -71,22 +68,18 @@ footer{color:#adc8d0;margin-top:20px;font-size:13px;line-height:1.7}
 <p class="desc">과정드라마의 주요 순간에서 경험한 감정을 돌아보고 모둠 대화와 성찰을 진행합니다.</p>
 <div class="note">현황판에서 새 활동을 한 번 생성한 뒤, 해당 활동의 QR을 크게 보여주세요.</div>
 <div class="actions">
-<a class="action" target="_blank" rel="noopener noreferrer" href="https://cjswoa-star.github.io/emotion-share-test/admin.html">진행자 현황판 열기 ↗</a>
+<a class="action" target="_blank" rel="noopener noreferrer" href="https://cjswoa-star.github.io/emotion-share-test/admin.html">진행자</a>
 </div>
 </article>
 <article class="card" style="--a:var(--blue)">
 <div class="num">03</div><div class="step">마무리 · 참여자 의견 수집</div>
 <h2>공개워크숍 설문</h2>
 <p class="desc">활동별 교육적 도움과 학교 현장 적용 가능성에 대한 참여자의 의견을 모읍니다.</p>
-<div class="note">기존 설문 그대로 · 선택형 9문항과 서술형 2문항</div>
-<div class="actions">
-<a class="action" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSd3yFuKVfUkAIUVP_7iWorP7TSDpX2R4lH6y7KLCKz83kJ_Rg/viewform">설문 열기 ↗</a>
-<button class="action secondary" type="button" data-qr="survey">설문 QR 크게</button>
-</div>
+<div class="note">QR코드를 크게 띄워 참여자에게 안내합니다.</div>
+<div class="actions"><button class="action" type="button" data-qr="survey">설문 QR</button></div>
 </article>
 </section>
-<div class="under"><strong>TV 연결 컴퓨터 1대로 운영</strong> — 이 페이지를 첫 번째 탭에 남겨두고, 각 프로그램 버튼을 누르면 새 탭에서 열립니다. 과정드라마 3개 분반이 끝나고 전체가 모이면 두 번째 프로그램으로 이동하면 됩니다. SEL용 QR은 활동 코드에 따라 달라지므로 진행자 현황판 안에서 생성합니다.</div>
-<footer>※ 기존 프로그램과 Firebase 데이터, Google Forms 설문 내용은 변경하지 않습니다. 이 화면은 진행을 돕는 실행 메뉴입니다.</footer>
+
 </main>
 <div id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="qrTitle">
 <div class="modalbox">
