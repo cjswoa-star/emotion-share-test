@@ -1,0 +1,23 @@
+name: Teacher start gate live QA
+on:
+  push:
+    paths:
+      - '.github/workflows/teacher-start-gate-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save playwright@1.56.1
+      - run: mkdir -p screenshots && node qa/waiting-gate-e2e.cjs
+      - name: Browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: teacher-waiting-gate-qa
+          path: screenshots/
+          if-no-files-found: ignore
