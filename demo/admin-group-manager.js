@@ -4,7 +4,7 @@
 let draft=null,editing=null;
 const baseDashboard=renderDashboard,baseOverlay=openOverlay;
 const keyFor=k=>k==='edit1'?'dialogue1':'dialogue2';
-const eligible=k=>rows(state.data||{}).filter(r=>k==='edit1'?r.focusScene:(r.focusScene&&r.deepDive?.reason));
+const eligible=k=>rows(state.data||{}).filter(r=>k==='edit1'?r.focusScene:(r.focusScene&&(r.deepDive?.reason||(state.data?.meta?.phase==='dialogue2'&&state.data?.participants?.[r.id]?.lateEntryPhase))));
 const mutable=k=>k==='edit1'?['selecting','dialogue1'].includes(state.data?.meta?.phase):['deep','dialogue2'].includes(state.data?.meta?.phase);
 const build=k=>(k==='edit1'?build1:build2)(state.data||{});
 function normalize(g){return JSON.parse(JSON.stringify(g||{}));}
