@@ -9,10 +9,11 @@
     const phase = data?.meta?.phase;
     if (!['dialogue1','dialogue2'].includes(phase)) return [];
     const current = data?.groups?.[groupsFor(phase)] || {};
-    if (!Object.keys(current).length) return [];
+    const override = phase === 'dialogue1' ? data?.meta?.forceDialogue1At : data?.meta?.forceDialogue2At;
+    if (!Object.keys(current).length && !override) return [];
     const assigned = new Set(Object.values(current).flatMap(g => g.members || []));
     return Object.entries(data?.participants || {})
-      .filter(([id,p]) => p?.lateEntryPhase && p.focusScene && !assigned.has(id))
+      .filter(([id,p]) => !!p?.focusScene && !assigned.has(id) && (p?.lateEntryPhase || override))
       .map(([id,p]) => ({id,sceneId:p.focusScene,nickname:p.nickname}));
   }
 
@@ -53,8 +54,9 @@
       const phase = data.meta?.phase;
       if (!['dialogue1','dialogue2'].includes(phase)) return;
       const kind = groupsFor(phase);
-      const source = data.groups?.[kind];
-      if (!source || !Object.keys(source).length) return;
+      const source = data.groups?.[kind] || {};
+      const override = phase === 'dialogue1' ? data.meta?.forceDialogue1At : data.meta?.forceDialogue2At;
+      if (!Object.keys(source).length && !override) return;
       const incoming = missing(data);
       if (!incoming.length) return;
       const groups = JSON.parse(JSON.stringify(source));
