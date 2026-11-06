@@ -75,7 +75,7 @@ try{
   await admin.getByRole('button',{name:'첫 번째 만남 시작'}).click();
   report('first_meeting_started',await until(async()=>{let r=await request('meta');return r.data?.phase==='dialogue1'}));
   await admin.getByRole('button',{name:'1차 만남 모둠'}).click();
-  report('first_groups_projector_visible',await admin.locator('#overlay .group-card').count()>=1);
+  report('first_groups_projector_visible',await until(async()=>await admin.locator('#overlay .group-card').count()>=1,9000));
   await admin.getByRole('button',{name:'닫기'}).click();
   await admin.getByRole('button',{name:/깊이 보기/}).click();
   report('deep_phase_advance',await until(async()=>{let r=await request('meta');return r.data?.phase==='deep'}));
@@ -99,7 +99,7 @@ try{
   await admin.getByRole('button',{name:'두 번째 만남 시작'}).click({timeout:7000});
   report('second_meeting_started',await until(async()=>{let r=await request('meta');return r.data?.phase==='dialogue2'}));
   await admin.getByRole('button',{name:'2차 만남 모둠'}).click();
-  report('second_groups_projector',await admin.locator('#overlay .group-card').count()>=1);
+  report('second_groups_projector',await until(async()=>await admin.locator('#overlay .group-card').count()>=1,9000));
   await admin.getByRole('button',{name:'닫기'}).click();
   await admin.getByRole('button',{name:/역할 밖의 나로/}).click();
   report('final_life_phase_started',await until(async()=>{let r=await request('meta');return r.data?.phase==='life'}));
