@@ -1,0 +1,27 @@
+name: Nov 7 presentation dress rehearsal
+on:
+  push:
+    paths:
+      - '.github/workflows/presentation-e2e.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rehearsal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser and QR decoder
+        run: npm install --no-save playwright@1.56.1 pngjs@7.0.0 jsqr@1.4.0
+      - name: Run independent browsers and Firebase checks
+        run: |
+          mkdir -p screenshots
+          node qa/presentation-e2e-20261106.cjs
+      - name: Save a projector screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: presentation-qa-nov7
+          path: screenshots
+          if-no-files-found: ignore
