@@ -1,0 +1,17 @@
+name: Late participant recovery live QA
+on:
+  push:
+    paths:
+      - '.github/workflows/late-join-qa.yml'
+      - 'qa/late-join-e2e.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save playwright@1.56.1
+      - run: node qa/late-join-e2e.cjs
