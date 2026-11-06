@@ -26,6 +26,33 @@ try{
   const inputs=await phone.locator('input').count();
   console.log('INPUT_COUNT '+inputs);
   await phone.screenshot({path:'screenshots/participant-onboarding-step.png'});
+  await phone.locator('#nick').fill('리허설학생');
+  await phone.locator('#next').click();
+  await phone.locator('.scene-counter').waitFor({timeout:20000});
+  console.log('PASS_UI nickname accepted and first scene rendered');
+  for(let i=0;i<7;i++){
+    await phone.locator('#mood').waitFor({timeout:8000});
+    const box=await phone.locator('#mood').boundingBox();
+    if(!box)throw Error('Mood stage missing at scene '+(i+1));
+    await phone.locator('#mood').click({position:{x:Math.round(box.width*.62),y:Math.round(box.height*.4)}});
+    await phone.locator('#next').click();
+    console.log('PASS_UI scene '+(i+1)+' mood checkpoint saved');
+  }
+  await phone.locator('#choose').waitFor({timeout:9000});
+  await phone.locator('#choose').click();
+  await phone.locator('[data-s="scene01"]').click();
+  await phone.waitForTimeout(1200);
+  const st=await phone.evaluate(()=>window.__FPSEL__.state);
+  if(st.focusScene!=='scene01'||Object.keys(st.checkpoints||{}).length!==7)throw Error('Student choices missing after selection');
+  const server=await fetch(DB+'/sessions/'+code+'/participants/'+encodeURIComponent(st.participantId)+'.json').then(r=>r.json());
+  if(!server||server.nickname!=='리허설학생'||Object.keys(server.checkpoints||{}).length!==7||server.focusScene!=='scene01')throw Error('Firebase participant full flow not persisted');
+  console.log('PASS_UI real student 7 scenes + focus persisted to Firebase');
+  await phone.locator('#my-past-open').waitFor({timeout:6500});
+  await phone.locator('#my-past-open').click();
+  if(!(await phone.locator('#my-past-review').innerText()).includes('내 선택 다시 보기'))throw Error('Past choices dialog missing');
+  await phone.locator('#my-past-close').click();
+  console.log('PASS_UI student can inspect past choices and return');
+  await phone.screenshot({path:'screenshots/participant-first-meeting.png'});
   console.log('ONBOARD_PROBE_SUCCESS');
 }catch(e){console.log('ONBOARD_PROBE_ERROR '+(e.stack||e));process.exitCode=1}
 finally{
