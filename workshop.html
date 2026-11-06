@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102939">
+<title>2026 경기 RAS 공개워크숍 · 진행자 통합 화면</title>
+<style>
+:root{--ink:#102939;--light:#f6faf8;--dim:#c9dde4;--mint:#80e0c4;--amber:#ffd68d;--blue:#a0d8ff}
+*{box-sizing:border-box}
+html{font-family:system-ui,-apple-system,"Malgun Gothic","Noto Sans KR",sans-serif}
+body{margin:0;background:radial-gradient(circle at 0% 0%,#28596b,transparent 44%),radial-gradient(circle at 100% 100%,#1c4955,transparent 43%),#102939;color:var(--light);min-height:100vh}
+main{max-width:1600px;margin:auto;padding:clamp(20px,4vw,62px)}
+header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:start;margin-bottom:34px}
+.kicker{color:var(--mint);font-weight:900;letter-spacing:.14em;font-size:clamp(13px,1.3vw,17px)}
+h1{font-size:clamp(29px,3.45vw,53px);letter-spacing:-.045em;line-height:1.25;margin:13px 0 8px}
+.lead{font-size:clamp(16px,1.4vw,21px);color:var(--dim);margin:0;line-height:1.6}
+.date{padding:13px 17px;border:1px solid #648395;border-radius:15px;background:#204458;font-weight:800;line-height:1.6}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.card{background:linear-gradient(145deg,#21465a,#143143);border-radius:22px;border:1px solid #426679;padding:29px;min-height:448px;display:flex;flex-direction:column;box-shadow:0 15px 35px #0019;position:relative;overflow:hidden}
+.card:before{content:"";height:6px;background:var(--a);position:absolute;top:0;left:0;right:0}
+.num{font-size:clamp(50px,5.5vw,80px);font-weight:900;color:var(--a);line-height:1;letter-spacing:-.06em}
+.step{color:var(--a);font-weight:900;font-size:15px;margin-top:16px}
+h2{font-size:clamp(24px,2.3vw,33px);letter-spacing:-.03em;margin:9px 0}
+.desc{font-size:clamp(15px,1.3vw,18px);line-height:1.7;color:#d8e7eb;margin:0}
+.note{color:#b8d2da;line-height:1.6;font-size:14px;margin-top:auto;padding:23px 0 12px}
+.actions{display:grid;gap:10px}
+.action{display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:12px;min-height:60px;padding:13px 16px;font-size:clamp(16px,1.4vw,20px);font-weight:950;background:var(--a);color:var(--ink);cursor:pointer;text-align:center}
+.action.secondary{background:transparent;border:2px solid #95b3c1;color:#f4f9fc}
+.action:hover,.action:focus-visible{outline:3px solid #fff9;outline-offset:2px}
+.under{margin-top:26px;padding:20px 25px;border-radius:16px;background:#1d3d4f;border:1px solid #547688;font-size:16px;color:#d5e5e9;line-height:1.7}
+.under strong{color:#fff}
+footer{color:#adc8d0;margin-top:20px;font-size:13px;line-height:1.7}
+#modal[hidden]{display:none}
+#modal{position:fixed;z-index:100;inset:0;background:#031725ec;display:grid;place-items:center;padding:18px}
+.modalbox{background:white;color:#173649;border-radius:22px;padding:clamp(18px,3vw,35px);width:min(94vw,620px);max-height:96vh;overflow:auto;text-align:center}
+.modalbox h2{font-size:clamp(24px,3vw,38px);margin:0 0 8px}
+.modalbox p{color:#385969;font-size:17px}
+#qr{display:grid;place-items:center;padding:13px}
+#qr svg{width:min(70vw,395px)!important;height:auto!important}
+#qrUrl{font-size:12px;word-break:break-all;color:#496876;margin:12px 0 18px}
+.close{width:100%;background:#173e54;color:white;border:0;min-height:52px;border-radius:12px;font-size:17px;font-weight:900;cursor:pointer}
+@media(max-width:1020px){.cards{grid-template-columns:1fr}.card{min-height:unset}.note{margin-top:14px;padding:0 0 14px}}
+@media(max-width:640px){main{padding:18px}.card{padding:21px}.under{padding:17px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div>
+<div class="kicker">2026 GYEONGGI RAS · WORKSHOP</div>
+<h1>문화예술교육과 사회정서학습을 잇는 연극교육</h1>
+<p class="lead">진행자 통합 화면 · 감정확대경부터 SEL 사후활동과 설문까지</p>
+</div>
+<div class="date">경기도연극교육연구회<br>2026. 11. 7. (토)</div>
+</header>
+<section class="cards" aria-label="프로그램 실행">
+<article class="card" style="--a:var(--mint)">
+<div class="num">01</div><div class="step">과정드라마 전 · 감정 탐색</div>
+<h2>감정확대경</h2>
+<p class="desc">감정의 이름과 의미를 살펴보고 감정지도와 퀴즈를 함께 체험합니다.</p>
+<div class="note">참가자에게 QR을 보여주고 직접 체험하도록 안내하세요.</div>
+<div class="actions">
+<a class="action" target="_blank" rel="noopener noreferrer" href="https://cjswoa-star.github.io/emotion-magnifier/index-v3.html">감정확대경 열기 ↗</a>
+<button class="action secondary" type="button" data-qr="emotion">감정확대경 QR 크게</button>
+</div>
+</article>
+<article class="card" style="--a:var(--amber)">
+<div class="num">02</div><div class="step">과정드라마 후 · SEL 사후활동</div>
+<h2>FAMOUS PEOPLE</h2>
+<p class="desc">과정드라마의 주요 순간에서 경험한 감정을 돌아보고 모둠 대화와 성찰을 진행합니다.</p>
+<div class="note">현황판에서 새 활동을 한 번 생성한 뒤, 해당 활동의 QR을 크게 보여주세요.</div>
+<div class="actions">
+<a class="action" target="_blank" rel="noopener noreferrer" href="https://cjswoa-star.github.io/emotion-share-test/admin.html">진행자 현황판 열기 ↗</a>
+</div>
+</article>
+<article class="card" style="--a:var(--blue)">
+<div class="num">03</div><div class="step">마무리 · 참여자 의견 수집</div>
+<h2>공개워크숍 설문</h2>
+<p class="desc">활동별 교육적 도움과 학교 현장 적용 가능성에 대한 참여자의 의견을 모읍니다.</p>
+<div class="note">기존 설문 그대로 · 선택형 9문항과 서술형 2문항</div>
+<div class="actions">
+<a class="action" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSd3yFuKVfUkAIUVP_7iWorP7TSDpX2R4lH6y7KLCKz83kJ_Rg/viewform">설문 열기 ↗</a>
+<button class="action secondary" type="button" data-qr="survey">설문 QR 크게</button>
+</div>
+</article>
+</section>
+<div class="under"><strong>TV 연결 컴퓨터 1대로 운영</strong> — 이 페이지를 첫 번째 탭에 남겨두고, 각 프로그램 버튼을 누르면 새 탭에서 열립니다. 과정드라마 3개 분반이 끝나고 전체가 모이면 두 번째 프로그램으로 이동하면 됩니다. SEL용 QR은 활동 코드에 따라 달라지므로 진행자 현황판 안에서 생성합니다.</div>
+<footer>※ 기존 프로그램과 Firebase 데이터, Google Forms 설문 내용은 변경하지 않습니다. 이 화면은 진행을 돕는 실행 메뉴입니다.</footer>
+</main>
+<div id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+<div class="modalbox">
+<h2 id="qrTitle">QR코드</h2>
+<p id="qrDesc">휴대전화 카메라로 스캔하세요.</p>
+<div id="qr"></div>
+<div id="qrUrl"></div>
+<button id="closeQr" class="close" type="button">진행자 화면으로 돌아가기</button>
+</div>
+</div>
+<script src="demo/vendor/qrcode.js"></script>
+<script>
+(function(){
+'use strict';
+var data={
+ emotion:{title:'감정확대경',url:'https://cjswoa-star.github.io/emotion-magnifier/index-v3.html'},
+ survey:{title:'공개워크숍 설문',url:'https://docs.google.com/forms/d/e/1FAIpQLSd3yFuKVfUkAIUVP_7iWorP7TSDpX2R4lH6y7KLCKz83kJ_Rg/viewform'}
+}, modal=document.getElementById('modal'),last=null;
+function close(){modal.hidden=true;document.body.style.overflow='';if(last)last.focus();}
+function open(which,from){
+ var item=data[which];if(!item)return;
+ last=from;document.getElementById('qrTitle').textContent=item.title;
+ document.getElementById('qrUrl').textContent=item.url;
+ var el=document.getElementById('qr');el.textContent='';
+ try{var q=qrcode(0,'M');q.addData(item.url,'Byte');q.make();el.innerHTML=q.createSvgTag({cellSize:5,margin:20,scalable:true});}
+ catch(e){el.textContent='QR 표시 실패: 아래 주소를 이용해 주세요.';console.error(e);}
+ modal.hidden=false;document.body.style.overflow='hidden';document.getElementById('closeQr').focus();
+}
+document.querySelectorAll('[data-qr]').forEach(function(b){b.addEventListener('click',function(){open(b.dataset.qr,b)})});
+document.getElementById('closeQr').addEventListener('click',close);
+modal.addEventListener('click',function(e){if(e.target===modal)close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close()});
+})();
+</script>
+</body>
+</html>
