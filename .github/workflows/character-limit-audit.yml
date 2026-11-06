@@ -9,7 +9,12 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect all input limits in production participant HTML
+      - name: Audit source limits
         run: node qa/audit-character-limits.cjs
+      - name: Install browser
+        run: npm install --no-save playwright@1.56.1
+      - name: Enter maximum text in actual UI and verify Firebase persistence
+        run: node qa/test-input-lengths-browser.cjs
