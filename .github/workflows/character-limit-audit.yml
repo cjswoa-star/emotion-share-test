@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/character-limit-audit.yml'
+      - 'qa/test-input-lengths-browser.cjs'
   workflow_dispatch:
 permissions:
   contents: read
