@@ -68,53 +68,11 @@
 
   // Transaction preserves existing groups; a late attendee is appended only, never
   // triggers group regeneration. Groups with capacity are preferred.
+  // Groups are owner-managed. A participant must never attempt to edit group
+  // assignments; the presenter board detects late arrivals and slots them in.
   async function joinExistingGroup(round,sceneId) {
-    const kind = round === 1 ? 'dialogue1' : 'dialogue2';
-    const meta = await nowMeta() || {};
-    if (meta.phase !== kind || !meta[kind + 'Open']) return;
-    const path = 'sessions/' + state.sessionId + '/groups/' + kind;
-    if (typeof F?.runTransaction !== 'function') {
-      throw new Error('실시간 모둠 배치 기능을 사용할 수 없습니다. 진행자에게 알려 주세요.');
-    }
-    const ref = F.ref(db,path);
-    const tx = await F.runTransaction(ref, raw => {
-      if (!raw || !Object.keys(raw).length) return;
-      if (Object.values(raw).some(g => (g?.members || []).includes(state.participantId))) return;
-      const groups = JSON.parse(JSON.stringify(raw));
-      const entries = Object.entries(groups);
-      const open = entries.filter(([,g]) => (g.members || []).length < 5);
-      let chosen;
-      if (round === 1) {
-        const matching = open.filter(([,g]) => g.sceneId === sceneId);
-        chosen = (matching.length ? matching : open).sort((a,b) => a[1].members.length-b[1].members.length)[0];
-      } else {
-        const mixed = open.filter(([,g]) => !(g.sceneIds||[]).includes(sceneId));
-        chosen = (mixed.length ? mixed : open).sort((a,b) => a[1].members.length-b[1].members.length)[0];
-      }
-      if (chosen) {
-        const [id,g] = chosen;
-        g.members = [...(g.members || []),state.participantId];
-        const scenes = new Set([...(g.sceneIds||[]),sceneId]);
-        g.sceneIds = [...scenes];
-        g.mixed = scenes.size > 1;
-        if (round===1 && g.sceneId !== sceneId) {
-          g.lateJoinMixed = true;
-        }
-        groups[id]=g;
-      } else {
-        const next = 'g' + String(Math.max(0,...entries.map(([id]) => parseInt(id.replace(/\D/g,''),10)||0))+1).padStart(2,'0');
-        groups[next] = round===1
-          ? {sceneId,members:[state.participantId],createdAt:Date.now(),lateJoin:true}
-          : {mode:'mixedScenes',members:[state.participantId],sceneIds:[sceneId],createdAt:Date.now(),lateJoin:true};
-      }
-      return groups;
-    },{applyLocally:false});
-    if (!tx.committed) {
-      const current = await get(path)||{};
-      if (!Object.values(current).some(g => (g?.members||[]).includes(state.participantId))) {
-        throw new Error('모둠 합류를 완료하지 못했습니다. 진행자에게 알려 주세요.');
-      }
-    }
+    if (!state.lateEntryPhase || !validScene(sceneId)) return;
+    return;
   }
 
   function stageNotice(title,description) {
