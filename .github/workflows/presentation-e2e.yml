@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/presentation-e2e.yml'
       - 'qa/presentation-e2e-20261106.cjs'
+      - 'qa/participant-onboarding-probe.cjs'
   workflow_dispatch:
 permissions:
   contents: read
