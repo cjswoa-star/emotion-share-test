@@ -1,0 +1,22 @@
+name: Workshop launcher live test
+on:
+  push:
+    paths:
+      - '.github/workflows/workshop-launcher-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save playwright@1.56.1 pngjs@7.0.0 jsqr@1.4.0
+      - run: node qa/workshop-launcher-smoke.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workshop-hub-screenshot
+          path: workshop-launcher-verified.png
+          if-no-files-found: ignore
