@@ -1,0 +1,14 @@
+name: Audit entry waiting gate
+on:
+  push:
+    paths:
+      - '.github/workflows/audit-start-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node qa/audit-start-gate.cjs
