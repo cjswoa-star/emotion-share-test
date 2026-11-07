@@ -13,7 +13,7 @@ tr,.quote,.group{break-inside:avoid}.quote{border:1px solid #d7e3e5;border-radiu
 footer{font-size:11px;color:#6b7e84;margin-top:20px}
 @media print{body{margin:0;max-width:none;font-size:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.bar{display:none}h2{break-after:avoid}.grid{gap:0 14px}}
 </style></head><body>
-<div class="bar"><strong>FAMOUS PEOPLE SEL · 읽기 전용 결과 보고서</strong><button id="print" disabled>PDF로 저장 / 인쇄</button><span id="status">데이터를 확인 중입니다.</span></div>
+<div class="bar"><strong>FAMOUS PEOPLE SEL · 읽기 전용 결과 보고서</strong><button id="print" disabled>PDF로 저장 / 인쇄</button><button id="json" disabled>전체 원본 데이터(JSON) 저장</button><span id="status">데이터를 확인 중입니다.</span></div>
 <div id="report"><h1>활동 결과를 불러오는 중입니다.</h1></div>
 <script>
 (async function(){
@@ -30,15 +30,26 @@ footer{font-size:11px;color:#6b7e84;margin-top:20px}
  const sectionGroups=key=>{const groups=Object.entries(d.groups?.[key]||{});return '<h2>'+(key==='dialogue1'?'1차':'2차')+' 만남 모둠</h2>'+(groups.length?groups.map(([id,g],i)=>'<div class="group"><b>모둠 '+(i+1)+'</b> · '+(g.members||[]).map(uid=>escape(d.participants?.[uid]?.nickname||uid)).join(' · ')+'</div>').join(''):'<p class="muted">저장된 모둠 없음</p>');};
  const row=p=>{const cols=[p.nickname||'마음친구',Object.keys(p.checkpoints||{}).filter(k=>p.checkpoints[k]).length+'/7',scene(p.focusScene),p.deepDive?.reason||'',p.finalReflection?.text||''];return '<tr>'+cols.map(s=>'<td>'+escape(s)+'</td>').join('')+'</tr>';};
  const reflection=people.filter(p=>p.finalReflection?.text).map(p=>'<div class="quote"><strong>'+escape(p.nickname||'마음친구')+'</strong><p>'+escape(p.finalReflection.text)+'</p></div>').join('');
+ const moods=[];
+ people.forEach(p=>{for(let i=1;i<=7;i++){const id='scene'+String(i).padStart(2,'0'),item=p.checkpoints?.[id];if(!item||item.status!=='experienced')continue;const x=Number(item.x),y=Number(item.y);if(!Number.isFinite(x)||!Number.isFinite(y))continue;const xx=Math.max(0,Math.min(1,x)),yy=Math.max(0,Math.min(1,y));const quadrant=(yy>=.5?2:0)+(xx>=.5?1:0);moods.push({id:p.id,nickname:p.nickname||'마음친구',scene:i,x:xx,y:yy,quadrant,details:item});}});
+ const quadrantLabels=['에너지 높음 · 불편함','에너지 높음 · 기분 좋음','에너지 낮음 · 불편함','에너지 낮음 · 기분 좋음'];
+ const moodSummary='<h2>전체 무드미터 사분면 집계</h2><p class="muted">분석 단위: 참가자 수가 아닌 장면별 유효 응답 수(한 사람이 여러 장면에 응답 가능). 좌표 경계값 0.5는 오른쪽·아래 사분면으로 분류합니다.</p><div class="grid">'+quadrantLabels.map((label,q)=>'<div class="count"><span>'+escape(label)+'</span><b>'+moods.filter(v=>v.quadrant===q).length+'개</b></div>').join('')+'</div><p>유효 무드미터 응답 '+moods.length+'개 · 응답 참가자 '+new Set(moods.map(v=>v.id)).size+'명</p>'+
+ '<h2>장면별 무드미터 분포</h2><table><thead><tr><th>장면</th><th>높음·불편</th><th>높음·좋음</th><th>낮음·불편</th><th>낮음·좋음</th></tr></thead><tbody>'+names.map((n,i)=>'<tr><td>'+(i+1)+'. '+escape(n)+'</td>'+quadrantLabels.map((q,j)=>'<td>'+moods.filter(v=>v.scene===i+1&&v.quadrant===j).length+'</td>').join('')+'</tr>').join('')+'</tbody></table>'+
+ '<h2>참가자별 무드미터 선택 기록</h2><table><thead><tr><th>참가자</th><th>장면</th><th>사분면</th><th>X 좌표</th><th>Y 좌표</th></tr></thead><tbody>'+moods.map(v=>'<tr><td>'+escape(v.nickname)+'</td><td>'+v.scene+'</td><td>'+escape(quadrantLabels[v.quadrant])+'</td><td>'+v.x.toFixed(4)+'</td><td>'+v.y.toFixed(4)+'</td></tr>').join('')+'</tbody></table>'+
+ '<p class="muted">응답 시 저장된 좌표를 유지하여 향후 감정 분포 시각화 및 장면 간 비교 분석이 가능합니다. 체크포인트의 기타 필드는 JSON 원본에 보관됩니다.</p>';
  const stamp=new Date().toLocaleString('ko-KR');
  target.innerHTML='<h1>FAMOUS PEOPLE SEL · 활동 결과 보고서</h1><p class="muted">드라마로 읽는 나의 마음 · 활동 코드 '+escape(code)+' · 출력 기준 '+escape(stamp)+'</p>'+
  '<div class="summary"><span>전체 참가자 '+people.length+'명</span><span>장면 선택 '+people.filter(p=>p.focusScene).length+'명</span><span>깊이 보기 '+people.filter(p=>p.deepDive?.reason).length+'명</span><span>최종 한마디 '+people.filter(p=>p.finalReflection?.text).length+'명</span></div>'+
  '<h2>7개 장면 선택 현황</h2><div class="grid">'+names.map((n,i)=>'<div class="count"><span>'+(i+1)+'. '+escape(n)+'</span><b>'+people.filter(p=>p.focusScene==='scene'+String(i+1).padStart(2,'0')).length+'명</b></div>').join('')+'</div>'+
- sectionGroups('dialogue1')+sectionGroups('dialogue2')+
+ moodSummary+sectionGroups('dialogue1')+sectionGroups('dialogue2')+
  '<h2>참가자별 활동 결과</h2><table><thead><tr><th>참가자</th><th>장면 완료</th><th>선택 장면</th><th>깊이 보기 이유</th><th>최종 한마디</th></tr></thead><tbody>'+people.map(row).join('')+'</tbody></table>'+
  '<h2>마지막 한마디 모음</h2>'+(reflection||'<p class="muted">등록된 최종 한마디 없음</p>')+
  '<footer>Firebase 활동 데이터를 읽기 전용으로 조회한 보고서입니다. 인쇄 또는 PDF 저장은 원본 데이터를 변경하지 않습니다. 참가자 개인정보가 포함될 수 있으므로 외부 공유에 주의하세요.</footer>';
  status.textContent='데이터 확인 완료 · 참가자 '+people.length+'명 · PDF 저장 가능';
  button.disabled=false;button.onclick=()=>window.print();
+ const jsonButton=document.getElementById('json');jsonButton.disabled=false;jsonButton.onclick=()=>{
+  const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),sessionCode:code,session:d},null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='FAMOUS_PEOPLE_SEL_'+code+'_full_backup.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+ };
 })();
 </script></body></html>
