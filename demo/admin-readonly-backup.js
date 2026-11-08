@@ -4,7 +4,7 @@
   const buttonId='fpSafeBackup';
   function attach(){
     const actions=document.querySelector('.top .actions');
-    if(!actions||!window.state||!state.sessionId||document.getElementById(buttonId))return;
+    if(!actions||typeof state==='undefined'||!state.sessionId||document.getElementById(buttonId))return;
     const btn=document.createElement('button');
     btn.id=buttonId;btn.className='btn soft';btn.type='button';btn.textContent='활동 원본 백업(JSON)';
     btn.title='Firebase에서 활동 데이터를 읽어 JSON으로 보관합니다. 원본 데이터는 변경하지 않습니다.';
